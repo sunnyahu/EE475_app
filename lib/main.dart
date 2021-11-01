@@ -1,35 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 
-void main() => runApp(MyApp());
+import './medication.dart';
+import './header_text.dart';
+import './edit_medication.dart';
 
-class MyApp extends StatelessWidget {
+void main() {
+  runApp(MaterialApp(
+    home: PillPal(),
+  ));
+}
+
+class PillPal extends StatefulWidget {
   @override
-  Widget build(BuildContext context) => MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: TextButton(
-          style: ButtonStyle(
-            foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
-          ),
-          onPressed: () {
-            FlutterBlue flutterBlue = FlutterBlue.instance;
-            // Start scanning
-            flutterBlue.startScan(timeout: Duration(seconds: 4));
+  State<StatefulWidget> createState() {
+    return PillPalState();
+  }
+}
 
-            // Listen to scan results
-            var subscription = flutterBlue.scanResults.listen((results) {
-              // do something with scan results
-              for (ScanResult r in results) {
-                print('${r.device.name} found! rssi: ${r.rssi}');
-              }
-            });
-            // Stop scanning
-            flutterBlue.stopScan();
-          },
-          child: Text('TextButton'),
+class PillPalState extends State<PillPal> {
+  // List of Medications
+  List<Medication> medications = [];
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('PillPal'),
         ),
-      );
+        body: Column(
+          children: <Widget>[
+            HeaderText('Medications'),
+            Expanded(
+              child: ListView.builder(
+                itemCount: medications.length,
+                itemBuilder: (BuildContext context, int index) {
+                  Medication medication = medications[index];
+                  return HeaderText(medication.name);
+                },
+              ),
+            ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => EditMedication(medications),
+              ),
+            ).then((value) {
+              // Reload Home Page once the user enters their medication
+              setState(() {});
+            });
+          },
+          child: const Icon(Icons.add),
+          backgroundColor: Colors.blue,
+        ),
+      ),
+    );
+  }
 }
