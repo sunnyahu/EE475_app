@@ -32,7 +32,7 @@ class EditMedication extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          isNew ? 'Add Medication' : '${medication!.name} Medication',
+          (isNew ? 'Add Medication' : medication!.name)!,
         ),
       ),
       body: Column(

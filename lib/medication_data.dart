@@ -40,9 +40,10 @@ class MedicationDataState extends State<MedicationData> {
       ),
       body: Column(
         children: <Widget>[
-          ElevatedButton(
-            child: const Text('Locate Bottle'),
-            onPressed: () {
+          ListTile(
+            title: const Text('Locate Bottle'),
+            trailing: const Icon(Icons.add_location_sharp),
+            onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -51,9 +52,10 @@ class MedicationDataState extends State<MedicationData> {
               );
             },
           ),
-          ElevatedButton(
-            child: const Text('View History'),
-            onPressed: () {
+          ListTile(
+            title: const Text('View History'),
+            trailing: const Icon(Icons.history),
+            onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -62,9 +64,10 @@ class MedicationDataState extends State<MedicationData> {
               );
             },
           ),
-          ElevatedButton(
-            child: const Text('View/Edit Information'),
-            onPressed: () {
+          ListTile(
+            title: const Text('View/Edit Information'),
+            trailing: const Icon(Icons.edit),
+            onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -76,9 +79,10 @@ class MedicationDataState extends State<MedicationData> {
               });
             },
           ),
-          ElevatedButton(
-            child: const Text('Delete Medication'),
-            onPressed: () {
+          ListTile(
+            title: const Text('Delete Medication'),
+            trailing: const Icon(Icons.delete),
+            onTap: () {
               showAlertDialog(context);
             },
           ),

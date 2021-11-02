@@ -43,9 +43,10 @@ class PillPalState extends State<PillPal> {
                 itemCount: medications.length,
                 itemBuilder: (BuildContext context, int index) {
                   Medication medication = medications[index];
-                  return ElevatedButton(
-                    child: Text(medication.name!),
-                    onPressed: () {
+                  return ListTile(
+                    title: Text(medication.name!),
+                    trailing: const Icon(Icons.medical_services),
+                    onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
