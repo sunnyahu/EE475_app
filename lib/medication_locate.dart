@@ -30,7 +30,9 @@ class LocateMedicationState extends State<LocateMedication> {
 
               // Listen to scan results
               var subscription = flutterBlue.scanResults.listen((results) {
-                devices.addAll(results);
+                setState(() {
+                  devices.addAll(results);
+                });
               });
               // Stop scanning
               flutterBlue.stopScan();

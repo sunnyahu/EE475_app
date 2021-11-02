@@ -29,7 +29,7 @@ class EditMedication extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          (isNew ? 'Add Medication' : '${medication!.name} Medication')!,
+          isNew ? 'Add Medication' : '${medication!.name} Medication',
         ),
       ),
       body: Column(
@@ -52,7 +52,9 @@ class EditMedication extends StatelessWidget {
           ElevatedButton(
             child: const Text('Save'),
             onPressed: () {
-              medications.add(medication!);
+              if (isNew) {
+                medications.add(medication!);
+              }
               Navigator.pop(context);
             },
           ),

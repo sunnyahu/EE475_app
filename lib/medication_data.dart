@@ -6,11 +6,23 @@ import './edit_medication.dart';
 import './medication_history.dart';
 import './medication_locate.dart';
 
-class MedicationData extends StatelessWidget {
+class MedicationData extends StatefulWidget {
   List<Medication> medications;
   Medication medication;
 
   MedicationData(this.medications, this.medication);
+
+  @override
+  State<StatefulWidget> createState() {
+    return MedicationDataState(medications, medication);
+  }
+}
+
+class MedicationDataState extends State<MedicationData> {
+  List<Medication> medications;
+  Medication medication;
+
+  MedicationDataState(this.medications, this.medication);
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +62,10 @@ class MedicationData extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => EditMedication(medications, medication),
                 ),
-              );
+              ).then((value) {
+                // Reload Home Page once the user enters their medication
+                setState(() {});
+              });
             },
           ),
           ElevatedButton(
