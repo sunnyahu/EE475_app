@@ -8,7 +8,6 @@
 /// - Delete Medication Button
 
 import 'package:flutter/material.dart';
-import 'package:pill_pal/medication_locate.dart';
 
 import './medication.dart';
 import './edit_medication.dart';
@@ -80,12 +79,47 @@ class MedicationDataState extends State<MedicationData> {
           ElevatedButton(
             child: const Text('Delete Medication'),
             onPressed: () {
-              medications.remove(medication);
-              Navigator.pop(context);
+              showAlertDialog(context);
             },
           ),
         ],
       ),
+    );
+  }
+
+  showAlertDialog(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: const Text('No'),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop();
+      },
+    );
+    Widget continueButton = TextButton(
+      child: const Text('Yes'),
+      onPressed: () {
+        medications.remove(medication);
+        Navigator.of(context, rootNavigator: true).pop();
+        Navigator.pop(context);
+      },
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: const Text('Delete Medication'),
+      content: const Text(
+        'Are you sure you want to delete this medication?',
+      ),
+      actions: [
+        continueButton,
+        cancelButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }
