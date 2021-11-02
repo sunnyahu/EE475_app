@@ -1,3 +1,9 @@
+/// PillPal
+///
+/// This file stores the Input widgets used on the "Add Medication"
+/// and "View/Edit Information" pages to update the Medication information
+/// through textfields and buttons.
+
 // Code from Flutter Docs:
 // https://api.flutter.dev/flutter/widgets/Form-class.html
 

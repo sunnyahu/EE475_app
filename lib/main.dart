@@ -1,3 +1,8 @@
+/// PillPal
+///
+/// This file stores the home page for the PillPal App which displays
+/// all the medications the user has entered.
+
 import 'package:flutter/material.dart';
 
 import './medication.dart';
@@ -32,6 +37,7 @@ class PillPalState extends State<PillPal> {
         body: Column(
           children: <Widget>[
             HeaderText('Medications'),
+            // List of Medications Entered by the user.
             Expanded(
               child: ListView.builder(
                 itemCount: medications.length,
@@ -47,7 +53,7 @@ class PillPalState extends State<PillPal> {
                               MedicationData(medications, medication),
                         ),
                       ).then((value) {
-                        // Reload Home Page once the user enters their medication
+                        // Reload Home Page once the user enters their medication.
                         setState(() {});
                       });
                     },
@@ -65,7 +71,7 @@ class PillPalState extends State<PillPal> {
                 builder: (context) => EditMedication(medications, null),
               ),
             ).then((value) {
-              // Reload Home Page once the user enters their medication
+              // Reload Home Page once the user enters their medication.
               setState(() {});
             });
           },

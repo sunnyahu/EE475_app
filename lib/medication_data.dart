@@ -1,3 +1,12 @@
+/// PillPal
+///
+/// This file stores the "Medication Data" page
+/// which has the following components:
+/// - Locate Bottle Button
+/// - View History Button
+/// - View/Edit Information Button
+/// - Delete Medication Button
+
 import 'package:flutter/material.dart';
 import 'package:pill_pal/medication_locate.dart';
 
@@ -69,7 +78,7 @@ class MedicationDataState extends State<MedicationData> {
             },
           ),
           ElevatedButton(
-            child: const Text('Delete Bottle'),
+            child: const Text('Delete Medication'),
             onPressed: () {
               medications.remove(medication);
               Navigator.pop(context);

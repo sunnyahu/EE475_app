@@ -1,6 +1,9 @@
-// The "Add Medication Page"
-// Opens when the user clicks the add button in the buttom right of the
-// main page.
+/// PillPal
+///
+/// This file stores the "Add/Edit Medication" page which appears when
+/// the user clicks the button in the bottom right of the home page
+/// to add a new medication, or when they click on "Edit/View Information"
+/// on a specific medication.
 
 import 'package:flutter/material.dart';
 

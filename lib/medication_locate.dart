@@ -1,3 +1,8 @@
+/// PillPal
+///
+/// This file stores "Locate Medication" page which
+/// stores the bluetooth scan results.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 

@@ -1,3 +1,8 @@
+/// PillPal
+///
+/// This file stores a widget for Header Text that may be useful
+/// in other places.
+
 import 'package:flutter/material.dart';
 
 class HeaderText extends StatelessWidget {

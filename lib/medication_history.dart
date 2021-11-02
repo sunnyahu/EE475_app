@@ -1,3 +1,8 @@
+/// PillPal
+///
+/// This file stores the "View History" for a given medication,
+/// showing when the medication was taken.
+
 import 'package:flutter/material.dart';
 
 import './medication.dart';

@@ -1,3 +1,10 @@
+/// PillPal
+///
+/// This file stores the "Medication" class which stores all information
+/// related to the medication entered by the user.
+/// The accompanying "Data" class is used to store the usage history by the
+/// user by storing the dates the medication was taken.
+
 class Medication {
   String? name;
   int? dose;
