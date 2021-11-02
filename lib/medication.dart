@@ -1,24 +1,17 @@
-import './data.dart';
-
 class Medication {
-  String name;
-  int dose;
-  bool leftBehind;
-  List<String> dosageTimes;
-  List<Data> history;
+  String? name;
+  int? dose;
+  bool? leftBehind;
+  List<String>? dosageTimes;
+  List<Data>? history;
 
-  bool isCancelled = false;
-
-  Medication({
-    required this.name,
-    required this.dose,
-    required this.leftBehind,
-    required this.dosageTimes,
-    required this.history,
-  });
+  Medication({this.name, this.dose, this.leftBehind}) {
+    dosageTimes = [];
+    history = [];
+  }
 
   void addHistory(Data data) {
-    history.add(data);
+    history!.add(data);
   }
 
   void set(id, value) {
@@ -30,8 +23,20 @@ class Medication {
         dose = value;
         break;
       case 'time':
-        dosageTimes.add(value);
+        dosageTimes!.add(value);
         break;
     }
   }
+}
+
+class Data {
+  int day, month, year;
+  String time;
+
+  Data({
+    required this.day,
+    required this.month,
+    required this.year,
+    required this.time,
+  });
 }

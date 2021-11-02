@@ -8,30 +8,35 @@ import './input.dart';
 import './medication.dart';
 
 class EditMedication extends StatelessWidget {
-  final Medication med = Medication(
-    name: '',
-    dose: -1,
-    leftBehind: false,
-    dosageTimes: [],
-    history: [],
-  );
   bool isSwitched = false;
 
   List<Medication> medications;
+  Medication? medication;
+  // "isNew" is true if the user is adding a new medication.
+  bool isNew = true;
 
-  EditMedication(this.medications);
+  EditMedication(this.medications, medication) {
+    isNew = medication == null;
+    if (isNew) {
+      this.medication = Medication();
+    } else {
+      this.medication = medication;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Medication'),
+        title: Text(
+          (isNew ? 'Add Medication' : '${medication!.name} Medication')!,
+        ),
       ),
       body: Column(
         children: <Widget>[
-          Input('Medication Name', med, 'name'),
-          Input('Dosage Amount', med, 'amount'),
-          Input('Dosage Time', med, 'time'),
+          Input('Medication Name', medication!, 'name'),
+          Input('Dosage Amount', medication!, 'amount'),
+          Input('Dosage Time', medication!, 'time'),
           const Text(
             'Left Behind Notification',
             textAlign: TextAlign.center,
@@ -39,7 +44,7 @@ class EditMedication extends StatelessWidget {
           Switch(
             value: isSwitched,
             onChanged: (value) {
-              med.leftBehind = value;
+              medication!.leftBehind = value;
             },
             activeTrackColor: Colors.blueAccent,
             activeColor: Colors.blue,
@@ -47,7 +52,7 @@ class EditMedication extends StatelessWidget {
           ElevatedButton(
             child: const Text('Save'),
             onPressed: () {
-              medications.add(med);
+              medications.add(medication!);
               Navigator.pop(context);
             },
           ),
@@ -55,10 +60,6 @@ class EditMedication extends StatelessWidget {
           ElevatedButton(
             child: const Text('Cancel'),
             onPressed: () {
-              // med.isCancelled is basically a flag that tells us
-              // the user cancelled.
-              med.isCancelled = true;
-              medications.add(med);
               Navigator.pop(context);
             },
           ),

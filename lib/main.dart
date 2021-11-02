@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_blue/flutter_blue.dart';
 
 import './medication.dart';
 import './header_text.dart';
 import './edit_medication.dart';
+import './medication_data.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -37,7 +37,21 @@ class PillPalState extends State<PillPal> {
                 itemCount: medications.length,
                 itemBuilder: (BuildContext context, int index) {
                   Medication medication = medications[index];
-                  return HeaderText(medication.name);
+                  return ElevatedButton(
+                    child: Text(medication.name!),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              MedicationData(medications, medication),
+                        ),
+                      ).then((value) {
+                        // Reload Home Page once the user enters their medication
+                        setState(() {});
+                      });
+                    },
+                  );
                 },
               ),
             ),
@@ -48,7 +62,7 @@ class PillPalState extends State<PillPal> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => EditMedication(medications),
+                builder: (context) => EditMedication(medications, null),
               ),
             ).then((value) {
               // Reload Home Page once the user enters their medication
