@@ -39,7 +39,10 @@ class PillPalState extends State<PillPal> {
             HeaderText('Medications'),
             // List of Medications Entered by the user.
             Expanded(
-              child: ListView.builder(
+              child: ListView.separated(
+                separatorBuilder: (context, index) {
+                  return const Divider();
+                },
                 itemCount: medications.length,
                 itemBuilder: (BuildContext context, int index) {
                   Medication medication = medications[index];

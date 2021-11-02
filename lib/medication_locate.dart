@@ -25,7 +25,6 @@ class LocateMedicationState extends State<LocateMedication> {
       ),
       body: Column(
         children: <Widget>[
-          const Text('Locate Medication'),
           ElevatedButton(
             child: const Text('Start Looking'),
             onPressed: () {
@@ -51,6 +50,7 @@ class LocateMedicationState extends State<LocateMedication> {
                 return ListTile(
                   title: Text('${device.device.name} - RSSI: ${device.rssi}'),
                   subtitle: Text(device.device.id.toString()),
+                  trailing: const Icon(Icons.medical_services),
                 );
               },
             ),

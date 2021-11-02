@@ -52,6 +52,7 @@ class MedicationDataState extends State<MedicationData> {
               );
             },
           ),
+          const Divider(),
           ListTile(
             title: const Text('View History'),
             trailing: const Icon(Icons.history),
@@ -64,6 +65,7 @@ class MedicationDataState extends State<MedicationData> {
               );
             },
           ),
+          const Divider(),
           ListTile(
             title: const Text('View/Edit Information'),
             trailing: const Icon(Icons.edit),
@@ -79,6 +81,7 @@ class MedicationDataState extends State<MedicationData> {
               });
             },
           ),
+          const Divider(),
           ListTile(
             title: const Text('Delete Medication'),
             trailing: const Icon(Icons.delete),
