@@ -10,7 +10,18 @@ import 'package:flutter/material.dart';
 import './input.dart';
 import './medication.dart';
 
-class EditMedication extends StatelessWidget {
+class EditMedication extends StatefulWidget {
+  List<Medication> medications;
+  Medication? medication;
+
+  EditMedication(this.medications, this.medication);
+  @override
+  State<StatefulWidget> createState() {
+    return EditMedicationState(medications, medication);
+  }
+}
+
+class EditMedicationState extends State<EditMedication> {
   bool isSwitched = false;
 
   List<Medication> medications;
@@ -18,7 +29,7 @@ class EditMedication extends StatelessWidget {
   // "isNew" is true if the user is adding a new medication.
   bool isNew = true;
 
-  EditMedication(this.medications, medication) {
+  EditMedicationState(this.medications, medication) {
     isNew = medication == null;
     if (isNew) {
       this.medication = Medication();
@@ -40,18 +51,26 @@ class EditMedication extends StatelessWidget {
           Input('Medication Name', medication!, 'name'),
           Input('Dosage Amount', medication!, 'amount'),
           Input('Dosage Time', medication!, 'time'),
-          const Text(
-            'Left Behind Notification',
-            textAlign: TextAlign.center,
-          ),
-          Switch(
-            value: isSwitched,
-            onChanged: (value) {
-              medication!.leftBehind = value;
+          ListTile(
+            title: const Text('Left Behind Notification'),
+            trailing: Switch(
+              value: isSwitched,
+              onChanged: (value) {
+                setState(() {
+                  isSwitched = value;
+                  medication!.leftBehind = !medication!.leftBehind!;
+                });
+              },
+              activeTrackColor: Colors.blueAccent,
+              activeColor: Colors.blue,
+            ),
+            onTap: () {
+              setState(() {
+                isSwitched = !isSwitched;
+              });
             },
-            activeTrackColor: Colors.blueAccent,
-            activeColor: Colors.blue,
           ),
+          SizedBox(height: 20),
           ElevatedButton(
             child: const Text('Save'),
             onPressed: () {

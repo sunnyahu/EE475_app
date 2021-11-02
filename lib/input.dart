@@ -14,10 +14,10 @@ import './medication.dart';
 class Input extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final String text;
-  final Medication med;
+  final Medication medication;
   final String id;
 
-  Input(this.text, this.med, this.id);
+  Input(this.text, this.medication, this.id);
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class Input extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             TextFormField(
-              onSaved: (value) => med.set(id, value),
+              onSaved: (value) => medication.set(id, value),
               decoration: InputDecoration(
                 hintText: text,
               ),

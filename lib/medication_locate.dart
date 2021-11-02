@@ -25,9 +25,10 @@ class LocateMedicationState extends State<LocateMedication> {
       ),
       body: Column(
         children: <Widget>[
-          ElevatedButton(
-            child: const Text('Start Looking'),
-            onPressed: () {
+          ListTile(
+            title: const Text('Start Looking'),
+            trailing: const Icon(Icons.search),
+            onTap: () {
               // Start scanning
               devices.clear();
               flutterBlue.startScan(timeout: Duration(seconds: 4));
