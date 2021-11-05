@@ -94,11 +94,13 @@ class MedicationDataState extends State<MedicationData> {
     );
   }
 
+  // Shows an alert dialog to confirm the deletion of the medication.
   showAlertDialog(BuildContext context) {
     // set up the buttons
     Widget cancelButton = TextButton(
       child: const Text('No'),
       onPressed: () {
+        // Close the dialog window.
         Navigator.of(context, rootNavigator: true).pop();
       },
     );
@@ -106,7 +108,9 @@ class MedicationDataState extends State<MedicationData> {
       child: const Text('Yes'),
       onPressed: () {
         medications.remove(medication);
+        // Close the dialog window.
         Navigator.of(context, rootNavigator: true).pop();
+        // Close the current page since the user just deleted this medication.
         Navigator.pop(context);
       },
     );

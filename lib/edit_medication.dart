@@ -4,6 +4,8 @@
 /// the user clicks the button in the bottom right of the home page
 /// to add a new medication, or when they click on "Edit/View Information"
 /// on a specific medication.
+///
+/// TODO: Make widget statless and change switch.
 
 import 'package:flutter/material.dart';
 
@@ -70,7 +72,7 @@ class EditMedicationState extends State<EditMedication> {
               });
             },
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           ElevatedButton(
             child: const Text('Save'),
             onPressed: () {
