@@ -11,7 +11,7 @@ The `MedicationData` class is the page of the app that looks like this:
 ```dart
 Scaffold(
     // "appBar" is the "Title" seen at the top of the page.
-    appBar: Medication Name
+    appBar: // Medication Name
     // "body" contains all the elements in this page as a list of Widgets.
     body: Column(
         // Button for "Locate Bottle"
