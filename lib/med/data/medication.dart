@@ -11,8 +11,8 @@ class Medication {
   late Map<String, dynamic> history;
   late Map<String, dynamic> notificationSettings;
 
-  Medication(this.id, name, dosage) {
-    prescription = {'name': name, 'times': <DateTime>[], 'dosage': dosage};
+  Medication(this.id) {
+    prescription = {'name': null, 'times': <DateTime>[], 'dosage': null};
     history = {
       'dosage': <DateTime>[],
       'notifications': <Map<DateTime, String>>[]
@@ -38,5 +38,22 @@ class Medication {
       'history': history,
       'notification_settings': notificationSettings
     };
+  }
+
+  void set(String field, dynamic value) {
+    switch (field) {
+      case 'id':
+        id = value;
+        break;
+      case 'prescription':
+        prescription = value;
+        break;
+      case 'history':
+        history = value;
+        break;
+      case 'notificationSettings':
+        notificationSettings = value;
+        break;
+    }
   }
 }

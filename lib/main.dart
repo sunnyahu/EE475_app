@@ -47,7 +47,8 @@ class PillPalState extends State<PillPal> {
                 itemBuilder: (BuildContext context, int index) {
                   Medication medication = medications[index];
                   return ListTile(
-                    title: Text(medication.name!),
+                    title: Text(medication.prescription['name']),
+                    subtitle: Text('ID: ' + medication.id.toString()),
                     trailing: const Icon(Icons.medical_services),
                     onTap: () {
                       Navigator.push(

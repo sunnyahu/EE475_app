@@ -36,7 +36,7 @@ class MedicationDataState extends State<MedicationData> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(medication.name!),
+        title: Text(medication.prescription['name']),
       ),
       body: Column(
         children: <Widget>[

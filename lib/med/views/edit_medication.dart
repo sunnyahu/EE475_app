@@ -34,7 +34,8 @@ class EditMedicationState extends State<EditMedication> {
   EditMedicationState(this.medications, medication) {
     isNew = medication == null;
     if (isNew) {
-      this.medication = Medication();
+      int id = 0; // TODO: Get ID from bluetooth.
+      this.medication = Medication(id);
     } else {
       this.medication = medication;
     }
@@ -45,7 +46,7 @@ class EditMedicationState extends State<EditMedication> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          (isNew ? 'Add Medication' : medication!.name)!,
+          (isNew ? 'Add Medication' : medication!.prescription['name'])!,
         ),
       ),
       body: Column(
@@ -60,7 +61,7 @@ class EditMedicationState extends State<EditMedication> {
               onChanged: (value) {
                 setState(() {
                   isSwitched = value;
-                  medication!.leftBehind = !medication!.leftBehind!;
+                  //medication!.leftBehind = !medication!.leftBehind!;
                 });
               },
               activeTrackColor: Colors.blueAccent,
