@@ -9,8 +9,8 @@
 
 import 'package:flutter/material.dart';
 
-import './input.dart';
-import './medication.dart';
+import '../../widgets/input.dart';
+import '../../med/data/medication.dart';
 
 class EditMedication extends StatefulWidget {
   List<Medication> medications;

@@ -5,10 +5,10 @@
 
 import 'package:flutter/material.dart';
 
-import './medication.dart';
-import './header_text.dart';
-import './edit_medication.dart';
-import './medication_data.dart';
+import './med/data/medication.dart';
+import './med/views/edit_medication.dart';
+import './med/views/medication_data.dart';
+import './widgets/header_text.dart';
 
 void main() {
   runApp(MaterialApp(

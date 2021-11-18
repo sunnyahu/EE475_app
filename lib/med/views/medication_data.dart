@@ -9,10 +9,10 @@
 
 import 'package:flutter/material.dart';
 
-import './medication.dart';
+import '../../med/data/medication.dart';
 import './edit_medication.dart';
 import './medication_history.dart';
-import './medication_locate.dart';
+import '../../blue/views/medication_locate.dart';
 
 class MedicationData extends StatefulWidget {
   List<Medication> medications;

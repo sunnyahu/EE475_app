@@ -9,7 +9,7 @@
 
 import 'package:flutter/material.dart';
 
-import './medication.dart';
+import '../../med/data/medication.dart';
 
 class Input extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();

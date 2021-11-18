@@ -5,7 +5,7 @@
 
 import 'package:flutter/material.dart';
 
-import './medication.dart';
+import '../../med/data/medication.dart';
 
 class MedicationHistory extends StatelessWidget {
   Medication medication;
