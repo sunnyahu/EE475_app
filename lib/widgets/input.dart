@@ -9,15 +9,13 @@
 
 import 'package:flutter/material.dart';
 
-import '../../med/data/medication.dart';
-
 class Input extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final String text;
-  final Medication medication;
-  final String id;
+  final Map<String, dynamic> data;
+  final String dataKey;
 
-  Input(this.text, this.medication, this.id);
+  Input(this.text, this.data, this.dataKey);
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +28,9 @@ class Input extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             TextFormField(
-              onSaved: (value) => medication.set(id, value),
+              onSaved: (value) {
+                data[dataKey] = value;
+              },
               decoration: InputDecoration(
                 hintText: text,
               ),

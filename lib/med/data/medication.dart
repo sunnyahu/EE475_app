@@ -2,8 +2,6 @@
 ///
 /// This file stores the "Medication" class which stores all information
 /// related to the medication entered by the user.
-/// The accompanying "Data" class is used to store the usage history by the
-/// user by storing the dates the medication was taken.
 
 class Medication {
   late int id;
@@ -12,14 +10,20 @@ class Medication {
   late Map<String, dynamic> notificationSettings;
 
   Medication(this.id) {
-    prescription = {'name': null, 'times': <DateTime>[], 'dosage': null};
+    prescription = {
+      'name': null, // Medication Name
+      'start_date': null, // Start Date
+      'end_date': null, // End Date
+      'times': <DateTime>[], // Times user should take the medication every day
+      'dosage': null, // Number of pills/medication to take for each times.
+    };
     history = {
       'dosage': <DateTime>[],
-      'notifications': <Map<DateTime, String>>[]
+      'notifications': <Map<DateTime, String>>[],
     };
     notificationSettings = {
-      'leave': false,
-      'push': false,
+      'leftBehind': false, // Notification for leaving bottle behind
+      'push': false, // Dis/enable push notifications
       'social': {},
     };
   }
@@ -38,22 +42,5 @@ class Medication {
       'history': history,
       'notification_settings': notificationSettings
     };
-  }
-
-  void set(String field, dynamic value) {
-    switch (field) {
-      case 'id':
-        id = value;
-        break;
-      case 'prescription':
-        prescription = value;
-        break;
-      case 'history':
-        history = value;
-        break;
-      case 'notificationSettings':
-        notificationSettings = value;
-        break;
-    }
   }
 }

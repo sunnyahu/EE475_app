@@ -73,6 +73,7 @@ class PillPalState extends State<PillPal> {
             Navigator.push(
               context,
               MaterialPageRoute(
+                // scan_new_bottle.dart view
                 builder: (context) => EditMedication(medications, null),
               ),
             ).then((value) {
