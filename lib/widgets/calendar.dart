@@ -18,17 +18,23 @@ class Calendar extends StatefulWidget {
 
 class CalendarState extends State<Calendar> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
-  DateTime _focusedDay = DateTime.now();
+  late DateTime _focusedDay;
   DateTime? _selectedDay;
   String text;
-  String dateKey; // Determines if user is selecting "start_date" or "end_date"
+  String dateKey; // Determines if user is selecting "start_date" or "end_date".
   Map<String, dynamic> data;
 
   CalendarState(
     this.text,
     this.dateKey,
     this.data,
-  );
+  ) {
+    if (data[dateKey] != null) {
+      _focusedDay = data[dateKey];
+    } else {
+      _focusedDay = DateTime.now();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

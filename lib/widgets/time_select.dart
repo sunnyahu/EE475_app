@@ -20,7 +20,7 @@ class TimeSelectState extends State<TimeSelect> {
   late List<DateTime> selectedTimes;
 
   TimeSelectState(this.data) {
-    if (!data.containsKey('times')) {
+    if (data['times'] == null) {
       data['times'] = <DateTime>[];
     }
     selectedTimes = data['times'];

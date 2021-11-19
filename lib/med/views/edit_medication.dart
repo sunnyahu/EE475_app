@@ -57,6 +57,7 @@ class EditMedicationState extends State<EditMedication> {
       endDateString = "End Date";
     } else {
       this.medication = medication;
+      data['name'] = medication.prescription['name'];
       data['dosage'] = medication.prescription['dosage'];
       push = medication.notificationSettings['push'];
       leftBehind = medication.notificationSettings['left_behind'];
@@ -65,7 +66,8 @@ class EditMedicationState extends State<EditMedication> {
         return "${time.hour}:${time.minute}${time.minute == 0 ? '0' : ''}";
       }).join(', ');
       timesString = "Times: $timesString";
-      data['times'] = medication.prescription['times'];
+      data['times'] = <DateTime>[];
+      data['times'].addAll(medication.prescription['times']);
       DateTime start = medication.prescription['start_date'];
       data['start_date'] = start;
       startDateString = "Start Date: ${start.month}-${start.day}-${start.year}";
@@ -93,7 +95,7 @@ class EditMedicationState extends State<EditMedication> {
               'name'),
           ListTile(
             title: Text("Dosage: ${data['dosage']}"),
-            trailing: const Icon(Icons.medication),
+            leading: const Icon(Icons.medication),
             onTap: () {
               Navigator.push(
                 context,
@@ -108,7 +110,19 @@ class EditMedicationState extends State<EditMedication> {
           ),
           ListTile(
             title: Text(timesString),
-            trailing: const Icon(Icons.access_time_filled),
+            trailing: IconButton(
+              icon: const Icon(Icons.close),
+              color: Colors.red,
+              tooltip: 'Remove Times',
+              splashRadius: 20,
+              onPressed: () {
+                setState(() {
+                  timesString = "Times";
+                  data['times'] = null;
+                });
+              },
+            ),
+            leading: const Icon(Icons.access_time_filled),
             onTap: () {
               Navigator.push(
                 context,
@@ -118,7 +132,7 @@ class EditMedicationState extends State<EditMedication> {
               ).then((value) {
                 // Reload Page.
                 setState(() {
-                  Set<DateTime> times = data['times']!;
+                  List<DateTime> times = data['times'] ??= [];
                   if (times.isNotEmpty) {
                     timesString = times.map((time) {
                       String pad = time.minute == 0 ? '0' : '';
@@ -132,7 +146,19 @@ class EditMedicationState extends State<EditMedication> {
           ),
           ListTile(
             title: Text(startDateString),
-            trailing: const Icon(Icons.calendar_today_outlined),
+            trailing: IconButton(
+              icon: const Icon(Icons.close),
+              color: Colors.red,
+              tooltip: 'Remove Start Date',
+              splashRadius: 20,
+              onPressed: () {
+                setState(() {
+                  startDateString = "Start Date";
+                  data['start_date'] = null;
+                });
+              },
+            ),
+            leading: const Icon(Icons.calendar_today_outlined),
             onTap: () {
               Navigator.push(
                 context,
@@ -154,7 +180,19 @@ class EditMedicationState extends State<EditMedication> {
           ),
           ListTile(
             title: Text(endDateString),
-            trailing: const Icon(Icons.calendar_today_outlined),
+            trailing: IconButton(
+              icon: const Icon(Icons.close),
+              color: Colors.red,
+              tooltip: 'Remove End Date',
+              splashRadius: 20,
+              onPressed: () {
+                setState(() {
+                  endDateString = "End Date";
+                  data['end_date'] = null;
+                });
+              },
+            ),
+            leading: const Icon(Icons.calendar_today_outlined),
             onTap: () {
               Navigator.push(
                 context,
@@ -215,9 +253,9 @@ class EditMedicationState extends State<EditMedication> {
               // end_date is not required since some patients may have
               // chronic conditions.
               for (final key in ['name', 'times', 'start_date']) {
-                if (data.containsKey(key)) {
+                if (data[key] != null) {
                   if (key == 'times') {
-                    medication!.prescription['times'].addAll(data['times']);
+                    medication!.prescription[key].addAll(data[key]);
                   } else {
                     medication!.prescription[key] = data[key];
                   }
@@ -225,20 +263,18 @@ class EditMedicationState extends State<EditMedication> {
                   missing.add(mapping[key]!);
                 }
               }
-              if (data['end_date'] != null) {
-                medication!.prescription['end_date'] = data['end_date'];
-              }
+              medication!.prescription['end_date'] = data['end_date'];
               medication!.notificationSettings['left_behind'] = leftBehind;
               medication!.notificationSettings['push'] = push;
               medication!.prescription['dosage'] = data['dosage'];
 
-              if ((isNew && missing.isEmpty) || !isNew) {
+              if (missing.isEmpty) {
                 if (isNew) {
                   // Add medication to list.
                   medications.add(medication!);
                 }
                 Navigator.pop(context);
-              } else if (isNew && missing.isNotEmpty) {
+              } else if (missing.isNotEmpty) {
                 showAlertDialog(context, missing.join(', '));
               }
             },
