@@ -17,10 +17,12 @@ class TimeSelect extends StatefulWidget {
 
 class TimeSelectState extends State<TimeSelect> {
   Map<String, dynamic> data;
-  late Set<DateTime> selectedTimes;
+  late List<DateTime> selectedTimes;
 
   TimeSelectState(this.data) {
-    data['times'] = <DateTime>{};
+    if (!data.containsKey('times')) {
+      data['times'] = <DateTime>[];
+    }
     selectedTimes = data['times'];
   }
 

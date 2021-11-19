@@ -7,11 +7,12 @@ import 'package:flutter/material.dart';
 class DosageSelect extends StatefulWidget {
   final Map<String, dynamic> data;
   int count;
+  int initial;
 
-  DosageSelect(this.data, this.count);
+  DosageSelect(this.data, this.count, this.initial);
   @override
   State<StatefulWidget> createState() {
-    return DosageSelectState(data, count);
+    return DosageSelectState(data, count, initial);
   }
 }
 
@@ -20,8 +21,8 @@ class DosageSelectState extends State<DosageSelect> {
   int count;
   late int selected;
 
-  DosageSelectState(this.data, this.count) {
-    selected = 0;
+  DosageSelectState(this.data, this.count, initial) {
+    selected = initial;
   }
 
   @override
@@ -38,9 +39,10 @@ class DosageSelectState extends State<DosageSelect> {
               separatorBuilder: (context, index) {
                 return const Divider();
               },
-              // Using 24-Hour time with increments of 30 minutes.
+              // 1-10 for Dosage.
               itemCount: count,
               itemBuilder: (BuildContext context, int index) {
+                index += 1;
                 // Set of values
                 return ListTile(
                   title: Text('$index'),

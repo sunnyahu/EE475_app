@@ -22,7 +22,7 @@ class Medication {
       'notifications': <Map<DateTime, String>>[],
     };
     notificationSettings = {
-      'leftBehind': false, // Notification for leaving bottle behind
+      'left_behind': false, // Notification for leaving bottle behind
       'push': false, // Dis/enable push notifications
       'social': {},
     };
