@@ -12,6 +12,10 @@ import '../../widgets/input.dart';
 import '../../contact/data/contact.dart';
 import '../../widgets/alert_dialog.dart';
 
+// Keys for the form fields (text inputs).
+final GlobalKey<FormState> contactName = GlobalKey<FormState>();
+final GlobalKey<FormState> phoneNumber = GlobalKey<FormState>();
+
 class EditContact extends StatefulWidget {
   final List<Contact> contacts;
   final Contact? contact;
@@ -39,79 +43,90 @@ class EditContactState extends State<EditContact> {
     if (isNew) {
       this.contact = Contact();
     } else {
+      data['name'] = contact.name;
+      data['phone_number'] = contact.phoneNumber;
       this.contact = contact;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        title: Text(
-          isNew ? 'Add Contact' : contact!.name,
+    return GestureDetector(
+      // Required so that textfields lose focus when you click outside of them.
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        appBar: AppBar(
+          title: Text(
+            isNew
+                ? 'Add Contact'
+                : '${contact!.name} - ${contact!.phoneNumber}',
+          ),
+        ),
+        body: ListView(
+          children: <Widget>[
+            Input('${!isNew ? "Update " : ""}Contact Name', data, 'name', false,
+                contactName),
+            Input('Phone Number', data, 'phone_number', true, phoneNumber),
+            isNew
+                ? const SizedBox.shrink()
+                : ListTile(
+                    tileColor: Colors.red,
+                    title: const Text(
+                      'Delete Contact',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    trailing: const Icon(Icons.delete, color: Colors.white),
+                    onTap: () {
+                      showAlertDialogYesNo(
+                        "Delete Contact",
+                        "Are you sure you want to delete this contact?",
+                        context,
+                        contacts,
+                        contact!,
+                      );
+                    },
+                  ),
+            ElevatedButton(
+              child: const Text('Save'),
+              onPressed: () {
+                missing.clear();
+                if (data['name'] == null) {
+                  missing.add('Name');
+                } else {
+                  contact!.name = data['name'];
+                }
+                if (data['phone_number'] == null) {
+                  missing.add('Phone Number');
+                } else {
+                  contact!.phoneNumber = data['phone_number'];
+                }
+                if (missing.isEmpty) {
+                  if (isNew) {
+                    contacts.add(contact!);
+                  }
+                  Navigator.pop(context);
+                } else {
+                  showAlertDialogOkay(
+                    context,
+                    missing.join(', '),
+                  );
+                }
+              },
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
         ),
       ),
-      body: Column(
-        children: <Widget>[
-          Input('${!isNew ? "Update " : ""}Contact Name', data, 'name', false),
-          Input('Phone Number', data, 'phone_number', true),
-          ListTile(
-            title: const Text('Delete Contact'),
-            enabled: !isNew,
-            trailing: const Icon(Icons.delete),
-            onTap: () {
-              showAlertDialogYesNo(
-                "Delete Contact",
-                "Are you sure you want to delete this contact?",
-                context,
-                contacts,
-                contact!,
-              );
-            },
-          ),
-          ElevatedButton(
-            child: const Text('Save'),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          const SizedBox(height: 10),
-          ElevatedButton(
-            child: const Text('Cancel'),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Shows an alert dialog to tell user to enter required information.
-  showAlertDialog(BuildContext context, String message) {
-    // set up the buttons
-    Widget okayButton = TextButton(
-      child: const Text('Okay'),
-      onPressed: () {
-        // Close the dialog window.
-        Navigator.of(context, rootNavigator: true).pop();
-      },
-    );
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: const Text('Missing Required Information'),
-      content: Text('Missing: $message'),
-      actions: [
-        okayButton,
-      ],
-    );
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
     );
   }
 }

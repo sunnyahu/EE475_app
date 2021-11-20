@@ -10,18 +10,18 @@
 import 'package:flutter/material.dart';
 
 class Input extends StatelessWidget {
-  static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> formKey;
   final String text;
   final Map<String, dynamic> data;
   final String dataKey;
   final bool isPhone;
 
-  Input(this.text, this.data, this.dataKey, this.isPhone);
+  Input(this.text, this.data, this.dataKey, this.isPhone, this.formKey);
 
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: _formKey,
+      key: formKey,
       child: Container(
         width: double.infinity,
         margin: const EdgeInsets.all(10),
@@ -50,9 +50,9 @@ class Input extends StatelessWidget {
                 onPressed: () {
                   // Validate will return true if the form is valid, or false if
                   // the form is invalid.
-                  if (_formKey.currentState!.validate()) {
+                  if (formKey.currentState!.validate()) {
                     // Process data.
-                    _formKey.currentState!.save();
+                    formKey.currentState!.save();
                   }
                 },
                 child: const Text(

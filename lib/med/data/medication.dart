@@ -3,6 +3,8 @@
 /// This file stores the "Medication" class which stores all information
 /// related to the medication entered by the user.
 
+import '../../contact/data/contact.dart';
+
 class Medication {
   late int id;
   late Map<String, dynamic> prescription;
@@ -24,7 +26,7 @@ class Medication {
     notificationSettings = {
       'left_behind': false, // Notification for leaving bottle behind
       'push': false, // Dis/enable push notifications
-      'social': <String>[],
+      'social': <Contact>[],
     };
   }
 
@@ -62,7 +64,9 @@ class Medication {
       'notification_settings': {
         'left_behind': notificationSettings['left_behind'].toString(),
         'push': notificationSettings['push'].toString(),
-        'social': notificationSettings['social'],
+        'social': notificationSettings['social']
+            .map((contact) => contact.toJson())
+            .toList(),
       }
     };
   }

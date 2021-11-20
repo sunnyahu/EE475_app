@@ -14,24 +14,27 @@ import '../../med/views/edit_medication.dart';
 import '../../med/views/medication_history.dart';
 import '../../blue/views/medication_locate.dart';
 import '../../widgets/alert_dialog.dart';
+import '../../contact/data/contact.dart';
 
 class MedicationData extends StatefulWidget {
   List<Medication> medications;
+  List<Contact> contacts;
   Medication medication;
 
-  MedicationData(this.medications, this.medication);
+  MedicationData(this.medications, this.contacts, this.medication);
 
   @override
   State<StatefulWidget> createState() {
-    return MedicationDataState(medications, medication);
+    return MedicationDataState(medications, contacts, medication);
   }
 }
 
 class MedicationDataState extends State<MedicationData> {
   List<Medication> medications;
+  List<Contact> contacts;
   Medication medication;
 
-  MedicationDataState(this.medications, this.medication);
+  MedicationDataState(this.medications, this.contacts, this.medication);
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +77,8 @@ class MedicationDataState extends State<MedicationData> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => EditMedication(medications, medication),
+                  builder: (context) =>
+                      EditMedication(medications, contacts, medication),
                 ),
               ).then((value) {
                 // Reload Home Page once the user enters their medication

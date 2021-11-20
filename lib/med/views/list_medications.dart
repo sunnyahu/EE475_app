@@ -8,81 +8,80 @@ import 'package:flutter/material.dart';
 import '../../med/data/medication.dart';
 import '../../med/views/edit_medication.dart';
 import '../../med/views/medication_data.dart';
-import '../../widgets/header_text.dart';
+import '../../contact/data/contact.dart';
 
-class ListMedication extends StatefulWidget {
+class ListMedications extends StatefulWidget {
   List<Medication> medications;
+  List<Contact> contacts;
   @override
-  ListMedication(this.medications);
+  ListMedications(this.medications, this.contacts);
 
   State<StatefulWidget> createState() {
-    return ListMedicationState(medications);
+    return ListMedicationState(medications, contacts);
   }
 }
 
-class ListMedicationState extends State<ListMedication> {
+class ListMedicationState extends State<ListMedications> {
   // List of Medications
   List<Medication> medications;
+  List<Contact> contacts;
 
-  ListMedicationState(this.medications);
+  ListMedicationState(this.medications, this.contacts);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('PillPal'),
-        ),
-        body: Column(
-          children: <Widget>[
-            HeaderText('Medications'),
-            // List of Medications Entered by the user.
-            Expanded(
-              child: ListView.separated(
-                separatorBuilder: (context, index) {
-                  return const Divider();
-                },
-                itemCount: medications.length,
-                itemBuilder: (BuildContext context, int index) {
-                  Medication medication = medications[index];
-                  return ListTile(
-                    title: Text(medication.prescription['name']),
-                    subtitle: Text('ID: ' + medication.id.toString()),
-                    trailing: const Icon(Icons.medical_services),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              MedicationData(medications, medication),
-                        ),
-                      ).then((value) {
-                        // Reload Home Page once the user enters their medication.
-                        setState(() {});
-                      });
-                    },
-                  );
-                },
-              ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Medications'),
+      ),
+      body: Column(
+        children: <Widget>[
+          // List of Medications Entered by the user.
+          Expanded(
+            child: ListView.separated(
+              separatorBuilder: (context, index) {
+                return const Divider();
+              },
+              itemCount: medications.length,
+              itemBuilder: (BuildContext context, int index) {
+                Medication medication = medications[index];
+                return ListTile(
+                  title: Text(medication.prescription['name']),
+                  subtitle: Text('ID: ' + medication.id.toString()),
+                  trailing: const Icon(Icons.medical_services),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            MedicationData(medications, contacts, medication),
+                      ),
+                    ).then((value) {
+                      // Reload Home Page once the user enters their medication.
+                      setState(() {});
+                    });
+                  },
+                );
+              },
             ),
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                // scan_new_bottle.dart view
-                builder: (context) => EditMedication(medications, null),
-              ),
-            ).then((value) {
-              // Reload Home Page once the user enters their medication.
-              setState(() {});
-            });
-          },
-          child: const Icon(Icons.add),
-          backgroundColor: Colors.blue,
-        ),
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              // scan_new_bottle.dart view
+              builder: (context) => EditMedication(medications, contacts, null),
+            ),
+          ).then((value) {
+            // Reload Home Page once the user enters their medication.
+            setState(() {});
+          });
+        },
+        child: const Icon(Icons.add),
+        backgroundColor: Colors.blue,
       ),
     );
   }
