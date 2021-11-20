@@ -15,6 +15,7 @@ import '../../widgets/calendar.dart';
 import '../../widgets/time_select.dart';
 import '../../widgets/dosage_select.dart';
 import '../../blue/services/register_bottle.dart';
+import '../../widgets/alert_dialog.dart';
 
 class EditMedication extends StatefulWidget {
   final List<Medication> medications;
@@ -28,8 +29,6 @@ class EditMedication extends StatefulWidget {
 }
 
 class EditMedicationState extends State<EditMedication> {
-  late bool push;
-  late bool leftBehind;
   late String timesString;
   late String startDateString;
   late String endDateString;
@@ -49,31 +48,37 @@ class EditMedicationState extends State<EditMedication> {
     if (isNew) {
       int id = registerBottle();
       this.medication = Medication(id);
+
       data['dosage'] = 1; // Set 1 as default for dosage.
-      push = false;
-      leftBehind = false;
+      data['push'] = false;
+      data['left_behind'] = false;
+
       timesString = "Times";
       startDateString = "Start Date";
       endDateString = "End Date";
     } else {
       this.medication = medication;
+
       data['name'] = medication.prescription['name'];
       data['dosage'] = medication.prescription['dosage'];
-      push = medication.notificationSettings['push'];
-      leftBehind = medication.notificationSettings['left_behind'];
-      //print(medication.prescription['times'][0].minute);
+      data['push'] = medication.notificationSettings['push'];
+      data['left_behind'] = medication.notificationSettings['left_behind'];
+
       timesString = medication.prescription['times'].map((time) {
         return "${time.hour}:${time.minute}${time.minute == 0 ? '0' : ''}";
       }).join(', ');
       timesString = "Times: $timesString";
+
       data['times'] = <DateTime>[];
       data['times'].addAll(medication.prescription['times']);
+
       DateTime start = medication.prescription['start_date'];
       data['start_date'] = start;
       startDateString = "Start Date: ${start.month}-${start.day}-${start.year}";
+
       DateTime? end = medication.prescription['end_date'];
+      data['end_date'] = end;
       if (end != null) {
-        data['end_date'] = end;
         endDateString = "End Date: ${end.month}-${end.day}-${end.year}";
       } else {
         endDateString = "End Date";
@@ -91,8 +96,12 @@ class EditMedicationState extends State<EditMedication> {
       ),
       body: Column(
         children: <Widget>[
-          Input('${!isNew ? "Update " : ""}Prescription/Medication Name', data,
-              'name'),
+          Input(
+            '${!isNew ? "Update " : ""}Prescription/Medication Name',
+            data,
+            'name',
+            false,
+          ),
           ListTile(
             title: Text("Dosage: ${data['dosage']}"),
             leading: const Icon(Icons.medication),
@@ -169,7 +178,7 @@ class EditMedicationState extends State<EditMedication> {
               ).then((value) {
                 // Reload Page.
                 setState(() {
-                  if (data.containsKey('start_date')) {
+                  if (data['start_date'] != null) {
                     DateTime start = data['start_date'];
                     startDateString =
                         "Start Date: ${start.month}-${start.day}-${start.year}";
@@ -202,7 +211,7 @@ class EditMedicationState extends State<EditMedication> {
               ).then((value) {
                 // Reload Page.
                 setState(() {
-                  if (data.containsKey('end_date')) {
+                  if (data['end_date'] != null) {
                     DateTime end = data['end_date'];
                     endDateString =
                         "End Date: ${end.month} ${end.day}-${end.year}";
@@ -213,28 +222,30 @@ class EditMedicationState extends State<EditMedication> {
           ),
           ListTile(
             title: Text(
-              (leftBehind ? 'Disable' : 'Enable') +
+              (data['left_behind'] ? 'Disable' : 'Enable') +
                   ' Bottle Left Behind Notifications',
             ),
             trailing: Icon(
-              leftBehind ? Icons.check_box : Icons.check_box_outline_blank,
+              data['left_behind']
+                  ? Icons.check_box
+                  : Icons.check_box_outline_blank,
             ),
             onTap: () {
               setState(() {
-                leftBehind = !leftBehind;
+                data['left_behind'] = !data['left_behind'];
               });
             },
           ),
           ListTile(
             title: Text(
-              (push ? 'Disable' : 'Enable') + ' Push Notifications',
+              (data['push'] ? 'Disable' : 'Enable') + ' Push Notifications',
             ),
             trailing: Icon(
-              push ? Icons.check_box : Icons.check_box_outline_blank,
+              data['push'] ? Icons.check_box : Icons.check_box_outline_blank,
             ),
             onTap: () {
               setState(() {
-                push = !push;
+                data['push'] = !data['push'];
               });
             },
           ),
@@ -254,18 +265,15 @@ class EditMedicationState extends State<EditMedication> {
               // chronic conditions.
               for (final key in ['name', 'times', 'start_date']) {
                 if (data[key] != null) {
-                  if (key == 'times') {
-                    medication!.prescription[key].addAll(data[key]);
-                  } else {
-                    medication!.prescription[key] = data[key];
-                  }
+                  medication!.prescription[key] = data[key];
                 } else {
                   missing.add(mapping[key]!);
                 }
               }
               medication!.prescription['end_date'] = data['end_date'];
-              medication!.notificationSettings['left_behind'] = leftBehind;
-              medication!.notificationSettings['push'] = push;
+              medication!.notificationSettings['left_behind'] =
+                  data['left_behind'];
+              medication!.notificationSettings['push'] = data['push'];
               medication!.prescription['dosage'] = data['dosage'];
 
               if (missing.isEmpty) {
@@ -275,7 +283,7 @@ class EditMedicationState extends State<EditMedication> {
                 }
                 Navigator.pop(context);
               } else if (missing.isNotEmpty) {
-                showAlertDialog(context, missing.join(', '));
+                showAlertDialogOkay(context, missing.join(', '));
               }
             },
           ),
@@ -288,33 +296,6 @@ class EditMedicationState extends State<EditMedication> {
           ),
         ],
       ),
-    );
-  }
-
-  // Shows an alert dialog to tell user to enter required information.
-  showAlertDialog(BuildContext context, String message) {
-    // set up the buttons
-    Widget okayButton = TextButton(
-      child: const Text('Okay'),
-      onPressed: () {
-        // Close the dialog window.
-        Navigator.of(context, rootNavigator: true).pop();
-      },
-    );
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: const Text('Missing Required Information'),
-      content: Text('Missing: $message'),
-      actions: [
-        okayButton,
-      ],
-    );
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
     );
   }
 }

@@ -10,12 +10,13 @@
 import 'package:flutter/material.dart';
 
 class Input extends StatelessWidget {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final String text;
   final Map<String, dynamic> data;
   final String dataKey;
+  final bool isPhone;
 
-  Input(this.text, this.data, this.dataKey);
+  Input(this.text, this.data, this.dataKey, this.isPhone);
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +29,8 @@ class Input extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             TextFormField(
+              // Different keyboards for different data types (phone number vs text)
+              keyboardType: isPhone ? TextInputType.phone : TextInputType.text,
               onSaved: (value) {
                 data[dataKey] = value;
               },

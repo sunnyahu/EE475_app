@@ -10,9 +10,10 @@
 import 'package:flutter/material.dart';
 
 import '../../med/data/medication.dart';
-import './edit_medication.dart';
-import './medication_history.dart';
+import '../../med/views/edit_medication.dart';
+import '../../med/views/medication_history.dart';
 import '../../blue/views/medication_locate.dart';
+import '../../widgets/alert_dialog.dart';
 
 class MedicationData extends StatefulWidget {
   List<Medication> medications;
@@ -86,51 +87,17 @@ class MedicationDataState extends State<MedicationData> {
             title: const Text('Delete Medication'),
             trailing: const Icon(Icons.delete),
             onTap: () {
-              showAlertDialog(context);
+              showAlertDialogYesNo(
+                "Delete Medication",
+                "Are you sure you want to delete this medication?",
+                context,
+                medications,
+                medication,
+              );
             },
           ),
         ],
       ),
-    );
-  }
-
-  // Shows an alert dialog to confirm the deletion of the medication.
-  showAlertDialog(BuildContext context) {
-    // set up the buttons
-    Widget cancelButton = TextButton(
-      child: const Text('No'),
-      onPressed: () {
-        // Close the dialog window.
-        Navigator.of(context, rootNavigator: true).pop();
-      },
-    );
-    Widget continueButton = TextButton(
-      child: const Text('Yes'),
-      onPressed: () {
-        medications.remove(medication);
-        // Close the dialog window.
-        Navigator.of(context, rootNavigator: true).pop();
-        // Close the current page since the user just deleted this medication.
-        Navigator.pop(context);
-      },
-    );
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: const Text('Delete Medication'),
-      content: const Text(
-        'Are you sure you want to delete this medication?',
-      ),
-      actions: [
-        continueButton,
-        cancelButton,
-      ],
-    );
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
     );
   }
 }

@@ -5,10 +5,10 @@
 
 import 'package:flutter/material.dart';
 
-import './med/data/medication.dart';
-import './med/views/edit_medication.dart';
-import './med/views/medication_data.dart';
-import './widgets/header_text.dart';
+import '../../med/data/medication.dart';
+import '../../med/views/list_medications.dart';
+import '../../contact/data/contact.dart';
+import '../../contact/views/list_contacts.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -26,63 +26,46 @@ class PillPal extends StatefulWidget {
 class PillPalState extends State<PillPal> {
   // List of Medications
   List<Medication> medications = [];
+  List<Contact> contacts = [];
 
   @override
   Widget build(BuildContext context) {
+    int index = 0;
+    PageController pageController = PageController(initialPage: 0);
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('PillPal'),
-        ),
-        body: Column(
-          children: <Widget>[
-            HeaderText('Medications'),
-            // List of Medications Entered by the user.
-            Expanded(
-              child: ListView.separated(
-                separatorBuilder: (context, index) {
-                  return const Divider();
-                },
-                itemCount: medications.length,
-                itemBuilder: (BuildContext context, int index) {
-                  Medication medication = medications[index];
-                  return ListTile(
-                    title: Text(medication.prescription['name']),
-                    subtitle: Text('ID: ' + medication.id.toString()),
-                    trailing: const Icon(Icons.medical_services),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              MedicationData(medications, medication),
-                        ),
-                      ).then((value) {
-                        // Reload Home Page once the user enters their medication.
-                        setState(() {});
-                      });
-                    },
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                // scan_new_bottle.dart view
-                builder: (context) => EditMedication(medications, null),
-              ),
-            ).then((value) {
-              // Reload Home Page once the user enters their medication.
-              setState(() {});
+        body: PageView(
+          controller: pageController,
+          onPageChanged: (int page) {
+            setState(() {
+              index = page;
             });
           },
-          child: const Icon(Icons.add),
-          backgroundColor: Colors.blue,
+          children: <Widget>[
+            ListMedication(medications),
+            ListContacts(contacts),
+          ],
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: index,
+          type: BottomNavigationBarType.fixed,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.contacts),
+              label: 'Contacts',
+            ),
+          ],
+          onTap: (int page) {
+            pageController.animateToPage(
+              page,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
+          },
         ),
       ),
     );
