@@ -54,7 +54,7 @@ class EditMedicationState extends State<EditMedication> {
   EditMedicationState(this.medications, this.contacts, medication) {
     isNew = medication == null;
     if (isNew) {
-      registerBottle().then((value) {
+      registerBottle(medications).then((value) {
         print("======================Received bottle id: " + value.toString());
         this.medication = Medication(value);
       });
