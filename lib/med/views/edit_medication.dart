@@ -54,8 +54,11 @@ class EditMedicationState extends State<EditMedication> {
   EditMedicationState(this.medications, this.contacts, medication) {
     isNew = medication == null;
     if (isNew) {
-      int id = registerBottle();
-      this.medication = Medication(id);
+      registerBottle().then((value) {
+        print("======================Received bottle id: " + value.toString());
+        this.medication = Medication(value);
+      });
+      print("after registerbottle");
 
       data['dosage'] = 1; // Set 1 as default for dosage.
       data['push'] = false;

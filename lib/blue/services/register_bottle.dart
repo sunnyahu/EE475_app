@@ -1,19 +1,25 @@
 // Registers the Pill Bottle using Bluetooth.
 
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:pill_pal/blue/data/packets.dart';
 
 // Called from edit_medication.dart in "EditMedicationState" constructor.
-int registerBottle() {
-  int id = 0; // Get ID from Register Packet.
+// Get the bottle id of a valid PillPal device broadcasting a register packet
+Future<int> registerBottle() async {
+  int id = -1; // Get ID from Register Packet.
   FlutterBlue flutterBlue = FlutterBlue.instance;
-  flutterBlue.startScan(timeout: Duration(seconds: 4));
-  var subscription = flutterBlue.scanResults.listen((results) {
-    for (ScanResult device in results) {
-      // device is a bluetooth device
+  // Get the first PillPal type Register packetz
+  var scan = flutterBlue.scan(timeout: const Duration(seconds: 4));
+  var sub = scan.listen(null);
+  sub.onData((result) {
+    if (Packet.isPillPallPacket(result) &&
+        Packet.getType(result) == PacketType.register) {
+      id = Packet.getId(result);
+      // print("Registering bottle " + id.toString());
+      flutterBlue.stopScan();
     }
   });
-  // Stop scanning
-  flutterBlue.stopScan();
 
+  await sub.asFuture();
   return id;
 }
