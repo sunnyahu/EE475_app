@@ -5,8 +5,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:pill_pal/blue/data/packets.dart';
+import 'package:pill_pal/med/data/medication.dart';
 
 class LocateMedication extends StatefulWidget {
+  Medication med;
+
+  LocateMedication(this.med, {Key? key}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
     return LocateMedicationState();
@@ -30,17 +36,27 @@ class LocateMedicationState extends State<LocateMedication> {
             trailing: const Icon(Icons.search),
             onTap: () {
               // Start scanning
-              devices.clear();
-              flutterBlue.startScan(timeout: Duration(seconds: 4));
-
-              // Listen to scan results
-              var subscription = flutterBlue.scanResults.listen((results) {
-                setState(() {
-                  devices.addAll(results);
-                });
-              });
-              // Stop scanning
               flutterBlue.stopScan();
+              devices.clear();
+              setState(() {});
+              print("Searching for : " + widget.med.id.toString());
+              var scan = flutterBlue.startScan();
+              flutterBlue.scanResults.listen((results) {
+                if (results.isNotEmpty) {
+                  for (ScanResult result in results) {
+                    if (Packet.isPillPalPacket(result) &&
+                        Packet.getType(result) == PacketType.beacon &&
+                        Packet.getId(result) == widget.med.id) {
+                      devices.clear();
+                      devices.add(result);
+                      setState(() {});
+                    }
+                  }
+                }
+              });
+
+              // Stop scanning
+              // flutterBlue.stopScan();
             },
           ),
           Expanded(

@@ -51,7 +51,7 @@ class MedicationDataState extends State<MedicationData> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => LocateMedication(),
+                  builder: (context) => LocateMedication(medication),
                 ),
               );
             },
