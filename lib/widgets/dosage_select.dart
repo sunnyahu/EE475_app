@@ -7,21 +7,23 @@ import 'package:flutter/material.dart';
 class DosageSelect extends StatefulWidget {
   final Map<String, dynamic> data;
   int count;
+  String keyName;
   int initial;
 
-  DosageSelect(this.data, this.count, this.initial);
+  DosageSelect(this.data, this.count, this.keyName, this.initial);
   @override
   State<StatefulWidget> createState() {
-    return DosageSelectState(data, count, initial);
+    return DosageSelectState(data, count, keyName, initial);
   }
 }
 
 class DosageSelectState extends State<DosageSelect> {
   Map<String, dynamic> data;
   int count;
+  String keyName;
   late int selected;
 
-  DosageSelectState(this.data, this.count, initial) {
+  DosageSelectState(this.data, this.count, this.keyName, initial) {
     selected = initial;
   }
 
@@ -50,7 +52,7 @@ class DosageSelectState extends State<DosageSelect> {
                     index == selected ? Icons.check_circle : null,
                   ),
                   onTap: () {
-                    data['dosage'] = index;
+                    data[keyName] = index;
                     setState(() {
                       selected = index;
                     });

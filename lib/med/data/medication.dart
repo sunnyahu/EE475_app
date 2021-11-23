@@ -14,6 +14,7 @@ class Medication {
   Medication(this.id) {
     prescription = {
       'name': null, // Medication Name
+      'x_days': 1, // Take medication every X days
       'start_date': null, // Start Date
       'end_date': null, // End Date
       'times': <DateTime>[], // Times user should take the medication every day
@@ -34,6 +35,7 @@ class Medication {
     id = json['id'];
     prescription = {
       'name': json['prescription']['name'],
+      'x_days': int.parse(json['prescription']['x_days']),
       'start_date': DateTime.parse(json['prescription']['start_date']),
       'end_date': json['end_date'] == 'null'
           ? null
@@ -52,6 +54,7 @@ class Medication {
       'id': id,
       'prescription': {
         'name': prescription['name'],
+        'x_days': prescription['x_days'],
         'start_date': prescription['start_date'].toString(),
         'end_date': prescription['end_date'].toString(),
         'times': prescription['times'].map((time) => time.toString()).toList(),

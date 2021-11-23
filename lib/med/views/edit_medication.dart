@@ -60,6 +60,7 @@ class EditMedicationState extends State<EditMedication> {
       });
       print("after registerbottle");
 
+      data['x_days'] = 1;
       data['dosage'] = 1; // Set 1 as default for dosage.
       data['push'] = false;
       data['left_behind'] = false;
@@ -72,12 +73,15 @@ class EditMedicationState extends State<EditMedication> {
       this.medication = medication;
 
       data['name'] = medication.prescription['name'];
+      data['x_days'] = medication.prescription['x_days'];
       data['dosage'] = medication.prescription['dosage'];
       data['push'] = medication.notificationSettings['push'];
       data['left_behind'] = medication.notificationSettings['left_behind'];
 
       data['contacts'] = <Contact>[];
-      data['contacts'].addAll(medication.notificationSettings['contacts']);
+      if (medication.notificationSettings['contacts'] != null) {
+        data['contacts'].addAll(medication.notificationSettings['contacts']);
+      }
       contactsString =
           data['contacts'].map((contact) => contact.name).join(', ');
       contactsString = "Select Contacts: $contactsString";
@@ -127,7 +131,7 @@ class EditMedicationState extends State<EditMedication> {
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        DosageSelect(data, 10, data['dosage']),
+                        DosageSelect(data, 10, 'dosage', data['dosage']),
                   ),
                 ).then((value) {
                   // Reload Page.
@@ -240,6 +244,22 @@ class EditMedicationState extends State<EditMedication> {
               },
             ),
             ListTile(
+              title: Text('Every ${data["x_days"]} Days'),
+              leading: const Icon(Icons.calendar_today_outlined),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        DosageSelect(data, 30, 'x_days', data['x_days']),
+                  ),
+                ).then((value) {
+                  // Reload Page.
+                  setState(() {});
+                });
+              },
+            ),
+            ListTile(
               title: Text(
                 (data['left_behind'] ? 'Disable' : 'Enable') +
                     ' Bottle Left Behind Notifications',
@@ -309,17 +329,13 @@ class EditMedicationState extends State<EditMedication> {
                     missing.add(mapping[key]!);
                   }
                 }
+                medication!.prescription['x_days'] = data['x_days'];
                 medication!.prescription['dosage'] = data['dosage'];
                 medication!.prescription['end_date'] = data['end_date'];
                 medication!.notificationSettings['left_behind'] =
                     data['left_behind'];
                 medication!.notificationSettings['push'] = data['push'];
-                if (data['contacts'] == null) {
-                  medication!.notificationSettings['contacts'] = <Contact>[];
-                } else {
-                  medication!.notificationSettings['contacts'] =
-                      data['contacts'];
-                }
+                medication!.notificationSettings['contacts'] = data['contacts'];
 
                 if (missing.isEmpty) {
                   if (isNew) {
