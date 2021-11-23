@@ -1,7 +1,8 @@
 /// PillPal
 ///
-/// This file stores the List Contacts page for the PillPal App which displays
-/// all the contacts the user has entered.
+/// This file stores the Select Contacts page for the PillPal App which displays
+/// allows the user to select which contacts should be notified on the\
+/// "Edit Medication" screen.
 
 import 'package:flutter/material.dart';
 

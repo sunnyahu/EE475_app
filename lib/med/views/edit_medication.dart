@@ -311,7 +311,12 @@ class EditMedicationState extends State<EditMedication> {
                 medication!.notificationSettings['left_behind'] =
                     data['left_behind'];
                 medication!.notificationSettings['push'] = data['push'];
-                medication!.notificationSettings['contacts'] = data['contacts'];
+                if (data['contacts'] == null) {
+                  medication!.notificationSettings['contacts'] = <Contact>[];
+                } else {
+                  medication!.notificationSettings['contacts'] =
+                      data['contacts'];
+                }
 
                 if (missing.isEmpty) {
                   if (isNew) {
