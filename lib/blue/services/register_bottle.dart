@@ -15,10 +15,10 @@ Future<int> registerBottle(List<Medication> meds) async {
   int id = -1; // Get ID from Register Packet.
   FlutterBlue flutterBlue = FlutterBlue.instance;
   // Get the first PillPal type Register packetz
-  var scan = flutterBlue.scan(timeout: const Duration(seconds: 4));
+  var scan = flutterBlue.scan(timeout: const Duration(seconds: 2));
   var sub = scan.listen(null);
   sub.onData((result) {
-    if (Packet.isPillPallPacket(result) &&
+    if (Packet.isPillPalPacket(result) &&
         Packet.getType(result) == PacketType.register &&
         !registeredIds.contains(Packet.getId(result))) {
       id = Packet.getId(result);

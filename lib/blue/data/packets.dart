@@ -7,7 +7,7 @@ const int uuid = 0xFFFF;
 const String deviceName = "PPal";
 
 class Packet {
-  static bool isPillPallPacket(ScanResult result) {
+  static bool isPillPalPacket(ScanResult result) {
     return result.advertisementData.localName == deviceName &&
         result.advertisementData.manufacturerData.containsKey(uuid);
   }
