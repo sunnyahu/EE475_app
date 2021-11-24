@@ -15,7 +15,7 @@ import '../../med/data/medication.dart';
 import '../../widgets/input.dart';
 import '../../widgets/calendar.dart';
 import '../../widgets/time_select.dart';
-import '../../widgets/dosage_select.dart';
+import '../../widgets/number_select.dart';
 import '../../widgets/alert_dialog.dart';
 import '../../contact/data/contact.dart';
 
@@ -131,7 +131,7 @@ class EditMedicationState extends State<EditMedication> {
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        DosageSelect(data, 10, 'dosage', data['dosage']),
+                        NumberSelect(data, 10, 'dosage', 'Dosage'),
                   ),
                 ).then((value) {
                   // Reload Page.
@@ -251,7 +251,7 @@ class EditMedicationState extends State<EditMedication> {
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        DosageSelect(data, 30, 'x_days', data['x_days']),
+                        NumberSelect(data, 30, 'x_days', 'X Days'),
                   ),
                 ).then((value) {
                   // Reload Page.

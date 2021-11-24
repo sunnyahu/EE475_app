@@ -4,34 +4,35 @@
 
 import 'package:flutter/material.dart';
 
-class DosageSelect extends StatefulWidget {
+class NumberSelect extends StatefulWidget {
   final Map<String, dynamic> data;
   int count;
   String keyName;
-  int initial;
+  String text;
 
-  DosageSelect(this.data, this.count, this.keyName, this.initial);
+  NumberSelect(this.data, this.count, this.keyName, this.text);
   @override
   State<StatefulWidget> createState() {
-    return DosageSelectState(data, count, keyName, initial);
+    return NumberSelectState(data, count, keyName, text);
   }
 }
 
-class DosageSelectState extends State<DosageSelect> {
+class NumberSelectState extends State<NumberSelect> {
   Map<String, dynamic> data;
   int count;
   String keyName;
+  String text;
   late int selected;
 
-  DosageSelectState(this.data, this.count, this.keyName, initial) {
-    selected = initial;
+  NumberSelectState(this.data, this.count, this.keyName, this.text) {
+    selected = data[keyName];
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dosage Selection'),
+        title: Text('$text Selection'),
       ),
       body: Column(
         children: <Widget>[
