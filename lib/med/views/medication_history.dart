@@ -16,20 +16,19 @@ class MedicationHistory extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(medication.prescription['name']),
+        title: Text(medication.name!),
       ),
       body: Column(
         children: <Widget>[
           Expanded(
             child: ListView.builder(
-                itemCount: medication.history['dosage'].length,
+                itemCount: medication.dosageHistory.length,
                 itemBuilder: (BuildContext context, int index) {
-                  var history = medication.history[index];
+                  var history = medication.dosageHistory[index];
                   return ListTile(
                     title: Text(
                       '${history.day}/${history.month}/${history.year}',
                     ),
-                    subtitle: Text(medication.history[index].time),
                   );
                 }),
           ),

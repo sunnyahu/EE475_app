@@ -5,25 +5,24 @@
 
 import 'package:flutter/material.dart';
 
-class TimeSelect extends StatefulWidget {
-  final Map<String, dynamic> data;
+import '../../med/data/medication.dart';
 
-  TimeSelect(this.data);
+class TimeSelect extends StatefulWidget {
+  final Medication medication;
+
+  TimeSelect(this.medication);
   @override
   State<StatefulWidget> createState() {
-    return TimeSelectState(data);
+    return TimeSelectState(medication);
   }
 }
 
 class TimeSelectState extends State<TimeSelect> {
-  Map<String, dynamic> data;
+  Medication medication;
   late List<DateTime> selectedTimes;
 
-  TimeSelectState(this.data) {
-    if (data['times'] == null) {
-      data['times'] = <DateTime>[];
-    }
-    selectedTimes = data['times'];
+  TimeSelectState(this.medication) {
+    selectedTimes = medication.times;
   }
 
   @override

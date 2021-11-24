@@ -28,23 +28,18 @@ class EditContact extends StatefulWidget {
 }
 
 class EditContactState extends State<EditContact> {
+  late Contact originalContact;
   Contact? contact;
   final List<Contact> contacts;
-  // "data" is used to keep track of the user responses.
-  // Once they click "save", all the information in "data" is copied into the
-  // medication object.
-  final Map<String, dynamic> data = {};
+
   late bool isNew;
-  // Internally used to check which required fields the user did not fill out.
-  List<String> missing = [];
 
   EditContactState(this.contacts, contact) {
     isNew = contact == null;
     if (isNew) {
       this.contact = Contact();
     } else {
-      data['name'] = contact.name;
-      data['phone_number'] = contact.phoneNumber;
+      originalContact = contact.copy();
       this.contact = contact;
     }
   }
@@ -65,9 +60,9 @@ class EditContactState extends State<EditContact> {
         ),
         body: ListView(
           children: <Widget>[
-            Input('${!isNew ? "Update " : ""}Contact Name', data, 'name', false,
-                contactName),
-            Input('Phone Number', data, 'phone_number', true, phoneNumber),
+            Input('${!isNew ? "Update " : ""}Contact Name', contact, 'name',
+                false, contactName),
+            Input('Phone Number', contact, 'phoneNumber', true, phoneNumber),
             isNew
                 ? const SizedBox.shrink()
                 : ListTile(
@@ -93,27 +88,13 @@ class EditContactState extends State<EditContact> {
             ElevatedButton(
               child: const Text('Save'),
               onPressed: () {
-                missing.clear();
-                if (data['name'] == null) {
-                  missing.add('Name');
-                } else {
-                  contact!.name = data['name'];
-                }
-                if (data['phone_number'] == null) {
-                  missing.add('Phone Number');
-                } else {
-                  contact!.phoneNumber = data['phone_number'];
-                }
-                if (missing.isEmpty) {
+                if (contact!.isValid) {
                   if (isNew) {
                     contacts.add(contact!);
                   }
                   Navigator.pop(context);
                 } else {
-                  showAlertDialogOkay(
-                    context,
-                    missing.join(', '),
-                  );
+                  showAlertDialogOkay(context, contact!.missing.join(', '));
                 }
               },
             ),
@@ -121,6 +102,9 @@ class EditContactState extends State<EditContact> {
             ElevatedButton(
               child: const Text('Cancel'),
               onPressed: () {
+                if (!isNew) {
+                  contact!.copyFrom(originalContact);
+                }
                 Navigator.pop(context);
               },
             ),

@@ -5,15 +5,17 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import '../../med/data/medication.dart';
+
 class Calendar extends StatefulWidget {
   String text;
-  String dateKey;
-  Map<String, dynamic> data;
+  String date;
+  Medication medication;
 
-  Calendar(this.text, this.dateKey, this.data);
+  Calendar(this.text, this.date, this.medication);
 
   @override
-  CalendarState createState() => CalendarState(text, dateKey, data);
+  CalendarState createState() => CalendarState(text, date, medication);
 }
 
 class CalendarState extends State<Calendar> {
@@ -21,16 +23,17 @@ class CalendarState extends State<Calendar> {
   late DateTime _focusedDay;
   DateTime? _selectedDay;
   String text;
-  String dateKey; // Determines if user is selecting "start_date" or "end_date".
-  Map<String, dynamic> data;
+  String date; // Determines if user is selecting the start or end date.
+  Medication medication;
 
   CalendarState(
     this.text,
-    this.dateKey,
-    this.data,
+    this.date,
+    this.medication,
   ) {
-    if (data[dateKey] != null) {
-      _focusedDay = data[dateKey];
+    DateTime? dateobj = medication.get(date);
+    if (dateobj != null) {
+      _focusedDay = dateobj;
     } else {
       _focusedDay = DateTime.now();
     }
@@ -91,7 +94,7 @@ class CalendarState extends State<Calendar> {
           ElevatedButton(
             child: const Text('Save'),
             onPressed: () {
-              data[dateKey] = _selectedDay;
+              medication.set(date, _selectedDay);
               Navigator.pop(context);
             },
           ),

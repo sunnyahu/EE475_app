@@ -7,30 +7,25 @@
 import 'package:flutter/material.dart';
 
 import '../../contact/data/contact.dart';
+import '../../med/data/medication.dart';
 
 class SelectContacts extends StatefulWidget {
   List<Contact> contacts;
-  Map<String, dynamic> data;
+  Medication medication;
   @override
-  SelectContacts(this.contacts, this.data);
+  SelectContacts(this.contacts, this.medication);
 
   State<StatefulWidget> createState() {
-    return SelectContactsState(contacts, data);
+    return SelectContactsState(contacts, medication);
   }
 }
 
 class SelectContactsState extends State<SelectContacts> {
   // List of Medications
   List<Contact> contacts;
-  Map<String, dynamic> data;
-  late List<Contact> selectedContacts;
+  Medication medication;
 
-  SelectContactsState(this.contacts, this.data) {
-    if (data['contacts'] == null) {
-      data['contacts'] = <Contact>[];
-    }
-    selectedContacts = data['contacts'];
-  }
+  SelectContactsState(this.contacts, this.medication);
 
   @override
   Widget build(BuildContext context) {
@@ -50,19 +45,19 @@ class SelectContactsState extends State<SelectContacts> {
               itemBuilder: (BuildContext context, int index) {
                 Contact contact = contacts[index];
                 return ListTile(
-                  title: Text(contact.name),
-                  subtitle: Text(contact.phoneNumber),
+                  title: Text(contact.name!),
+                  subtitle: Text(contact.phoneNumber!),
                   trailing: Icon(
-                    selectedContacts.contains(contact)
+                    medication.contacts.contains(contact)
                         ? Icons.check_box
                         : Icons.check_box_outline_blank,
                   ),
                   onTap: () {
                     setState(() {
-                      if (selectedContacts.contains(contact)) {
-                        selectedContacts.remove(contact);
+                      if (medication.contacts.contains(contact)) {
+                        medication.contacts.remove(contact);
                       } else {
-                        selectedContacts.add(contact);
+                        medication.contacts.add(contact);
                       }
                     });
                   },

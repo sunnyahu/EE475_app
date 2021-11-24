@@ -42,8 +42,8 @@ class ListContactsState extends State<ListContacts> {
               itemBuilder: (BuildContext context, int index) {
                 Contact contact = contacts[index];
                 return ListTile(
-                  title: Text(contact.name),
-                  subtitle: Text(contact.phoneNumber),
+                  title: Text(contact.name!),
+                  subtitle: Text(contact.phoneNumber!),
                   trailing: const Icon(Icons.person),
                   onTap: () {
                     Navigator.push(

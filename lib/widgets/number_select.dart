@@ -4,28 +4,30 @@
 
 import 'package:flutter/material.dart';
 
+import '../../med/data/medication.dart';
+
 class NumberSelect extends StatefulWidget {
-  final Map<String, dynamic> data;
+  final Medication medication;
   int count;
   String keyName;
   String text;
 
-  NumberSelect(this.data, this.count, this.keyName, this.text);
+  NumberSelect(this.medication, this.count, this.keyName, this.text);
   @override
   State<StatefulWidget> createState() {
-    return NumberSelectState(data, count, keyName, text);
+    return NumberSelectState(medication, count, keyName, text);
   }
 }
 
 class NumberSelectState extends State<NumberSelect> {
-  Map<String, dynamic> data;
+  Medication medication;
   int count;
   String keyName;
   String text;
   late int selected;
 
-  NumberSelectState(this.data, this.count, this.keyName, this.text) {
-    selected = data[keyName];
+  NumberSelectState(this.medication, this.count, this.keyName, this.text) {
+    selected = medication.get(keyName);
   }
 
   @override
@@ -53,7 +55,7 @@ class NumberSelectState extends State<NumberSelect> {
                     index == selected ? Icons.check_circle : null,
                   ),
                   onTap: () {
-                    data[keyName] = index;
+                    medication.set(keyName, index);
                     setState(() {
                       selected = index;
                     });

@@ -34,16 +34,12 @@ class EditMedication extends StatefulWidget {
 }
 
 class EditMedicationState extends State<EditMedication> {
+  late Medication originalMedication;
   Medication? medication;
   final List<Medication> medications;
   final List<Contact> contacts;
-  // "data" is used to keep track of the user responses.
-  // Once they click "save", all the information in "data" is copied into the
-  // medication object.
-  final Map<String, dynamic> data = {};
+  // If the user is adding a new medication "isNew" is true.
   late bool isNew;
-  // Internally used to check which required fields the user did not fill out.
-  List<String> missing = [];
 
   // Used to display current information entered by the user.
   late String timesString;
@@ -54,56 +50,41 @@ class EditMedicationState extends State<EditMedication> {
   EditMedicationState(this.medications, this.contacts, medication) {
     isNew = medication == null;
     if (isNew) {
-      registerBottle(medications).then((value) {
-        print("======================Received bottle id: " + value.toString());
-        this.medication = Medication(value);
-      });
-      print("after registerbottle");
-
-      data['x_days'] = 1;
-      data['dosage'] = 1; // Set 1 as default for dosage.
-      data['push'] = false;
-      data['left_behind'] = false;
+      // regsisterBottle(medications).then((value) {
+      //   print("======================Received bottle id: " + value.toString());
+      //   this.medication = Medication(value);
+      // });
+      // print("after registerbottle");
+      this.medication = Medication(0);
 
       timesString = "Times";
       startDateString = "Start Date";
       endDateString = "End Date";
       contactsString = "Select Contacts";
     } else {
+      // Save original state of the medication. In case the user cancels the
+      // changes, we can revert to this state.
+      originalMedication = medication.copy();
       this.medication = medication;
 
-      data['name'] = medication.prescription['name'];
-      data['x_days'] = medication.prescription['x_days'];
-      data['dosage'] = medication.prescription['dosage'];
-      data['push'] = medication.notificationSettings['push'];
-      data['left_behind'] = medication.notificationSettings['left_behind'];
-
-      data['contacts'] = <Contact>[];
-      if (medication.notificationSettings['contacts'] != null) {
-        data['contacts'].addAll(medication.notificationSettings['contacts']);
-      }
-      contactsString =
-          data['contacts'].map((contact) => contact.name).join(', ');
-      contactsString = "Select Contacts: $contactsString";
-
-      data['times'] = <DateTime>[];
-      data['times'].addAll(medication.prescription['times']);
-      timesString = data['times'].map((time) {
+      timesString = "Times: ${medication.times.map((time) {
         return "${time.hour}:${time.minute}${time.minute == 0 ? '0' : ''}";
-      }).join(', ');
-      timesString = "Times: $timesString";
-
-      DateTime start = medication.prescription['start_date'];
-      data['start_date'] = start;
-      startDateString = "Start Date: ${start.month}-${start.day}-${start.year}";
-
-      DateTime? end = medication.prescription['end_date'];
-      data['end_date'] = end;
+      }).join(', ')}";
+      DateTime? start = medication.startDate;
+      if (start != null) {
+        startDateString =
+            "Start Date: ${start.day}/${start.month}/${start.year}";
+      } else {
+        startDateString = "Start Date";
+      }
+      DateTime? end = medication.endDate;
       if (end != null) {
         endDateString = "End Date: ${end.month}-${end.day}-${end.year}";
       } else {
         endDateString = "End Date";
       }
+      contactsString =
+          "Select Contacts: ${medication.contacts.map((contact) => contact.name).join(', ')}";
     }
   }
 
@@ -116,22 +97,22 @@ class EditMedicationState extends State<EditMedication> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
           title: Text(
-            isNew ? 'Add Medication' : medication!.prescription['name'],
+            isNew ? 'Add Medication' : medication!.name!,
           ),
         ),
         body: ListView(
           children: <Widget>[
             Input('${!isNew ? "Update " : ""}Prescription/Medication Name',
-                data, 'name', false, medicationName),
+                medication!, 'name', false, medicationName),
             ListTile(
-              title: Text("Dosage: ${data['dosage']}"),
+              title: Text("Dosage: ${medication!.dosage}"),
               leading: const Icon(Icons.medication),
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        NumberSelect(data, 10, 'dosage', 'Dosage'),
+                        NumberSelect(medication!, 10, 'dosage', 'Dosage'),
                   ),
                 ).then((value) {
                   // Reload Page.
@@ -149,7 +130,7 @@ class EditMedicationState extends State<EditMedication> {
                 onPressed: () {
                   setState(() {
                     timesString = "Times";
-                    data['times'] = null;
+                    medication!.times.clear();
                   });
                 },
               ),
@@ -158,18 +139,17 @@ class EditMedicationState extends State<EditMedication> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => TimeSelect(data),
+                    builder: (context) => TimeSelect(medication!),
                   ),
                 ).then((value) {
                   // Reload Page.
                   setState(() {
-                    List<DateTime> times = data['times'] ??= [];
+                    List<DateTime> times = medication!.times;
                     if (times.isNotEmpty) {
-                      timesString = times.map((time) {
+                      timesString = "Times: ${times.map((time) {
                         String pad = time.minute == 0 ? '0' : '';
                         return "${time.hour}:${time.minute}$pad";
-                      }).join(', ');
-                      timesString = "Times: $timesString";
+                      }).join(', ')}";
                     }
                   });
                 });
@@ -183,9 +163,9 @@ class EditMedicationState extends State<EditMedication> {
                 tooltip: 'Remove Start Date',
                 splashRadius: 20,
                 onPressed: () {
+                  medication!.startDate = null;
                   setState(() {
                     startDateString = "Start Date";
-                    data['start_date'] = null;
                   });
                 },
               ),
@@ -194,14 +174,17 @@ class EditMedicationState extends State<EditMedication> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        Calendar('Start Date', 'start_date', data),
+                    builder: (context) => Calendar(
+                      'Start Date',
+                      'startDate', // Field name in medication object.
+                      medication!,
+                    ),
                   ),
                 ).then((value) {
                   // Reload Page.
                   setState(() {
-                    if (data['start_date'] != null) {
-                      DateTime start = data['start_date'];
+                    DateTime? start = medication!.startDate;
+                    if (start != null) {
                       startDateString =
                           "Start Date: ${start.month}-${start.day}-${start.year}";
                     }
@@ -217,9 +200,9 @@ class EditMedicationState extends State<EditMedication> {
                 tooltip: 'Remove End Date',
                 splashRadius: 20,
                 onPressed: () {
+                  medication!.endDate = null;
                   setState(() {
                     endDateString = "End Date";
-                    data['end_date'] = null;
                   });
                 },
               ),
@@ -228,30 +211,33 @@ class EditMedicationState extends State<EditMedication> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        Calendar('End Date', 'end_date', data),
+                    builder: (context) => Calendar(
+                      'End Date',
+                      'endDate', // Field name in medication object.
+                      medication!,
+                    ),
                   ),
                 ).then((value) {
                   // Reload Page.
                   setState(() {
-                    if (data['end_date'] != null) {
-                      DateTime end = data['end_date'];
+                    DateTime? end = medication!.endDate;
+                    if (end != null) {
                       endDateString =
-                          "End Date: ${end.month} ${end.day}-${end.year}";
+                          "End Date: ${end.month}-${end.day}-${end.year}";
                     }
                   });
                 });
               },
             ),
             ListTile(
-              title: Text('Every ${data["x_days"]} Days'),
+              title: Text('Every ${medication!.xDays} Days'),
               leading: const Icon(Icons.calendar_today_outlined),
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        NumberSelect(data, 30, 'x_days', 'X Days'),
+                        NumberSelect(medication!, 30, 'xDays', 'X Days'),
                   ),
                 ).then((value) {
                   // Reload Page.
@@ -261,30 +247,33 @@ class EditMedicationState extends State<EditMedication> {
             ),
             ListTile(
               title: Text(
-                (data['left_behind'] ? 'Disable' : 'Enable') +
+                (medication!.leftBehind ? 'Disable' : 'Enable') +
                     ' Bottle Left Behind Notifications',
               ),
               trailing: Icon(
-                data['left_behind']
+                medication!.leftBehind
                     ? Icons.check_box
                     : Icons.check_box_outline_blank,
               ),
               onTap: () {
                 setState(() {
-                  data['left_behind'] = !data['left_behind'];
+                  medication!.leftBehind = !medication!.leftBehind;
                 });
               },
             ),
             ListTile(
               title: Text(
-                (data['push'] ? 'Disable' : 'Enable') + ' Push Notifications',
+                (medication!.push ? 'Disable' : 'Enable') +
+                    ' Push Notifications',
               ),
               trailing: Icon(
-                data['push'] ? Icons.check_box : Icons.check_box_outline_blank,
+                medication!.push
+                    ? Icons.check_box
+                    : Icons.check_box_outline_blank,
               ),
               onTap: () {
                 setState(() {
-                  data['push'] = !data['push'];
+                  medication!.push = !medication!.push;
                 });
               },
             ),
@@ -295,15 +284,15 @@ class EditMedicationState extends State<EditMedication> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SelectContacts(contacts, data),
+                    builder: (context) => SelectContacts(contacts, medication!),
                   ),
                 ).then((value) {
                   // Reload Page.
                   setState(() {
-                    contactsString = data['contacts'].map((contact) {
+                    contactsString =
+                        "Select Contacts: ${medication!.contacts.map((contact) {
                       return contact.name;
-                    }).join(', ');
-                    contactsString = "Select Contacts: $contactsString";
+                    }).join(', ')}";
                   });
                 });
               },
@@ -312,39 +301,14 @@ class EditMedicationState extends State<EditMedication> {
             ElevatedButton(
               child: const Text('Save'),
               onPressed: () {
-                missing.clear();
-                Map<String, String> mapping = {
-                  'name': 'Name',
-                  'times': 'Times',
-                  'start_date': 'Start Date'
-                };
-                // Check if all required fields are filled.
-                // dosage is 1 by default.
-                // end_date is not required since some patients may have
-                // chronic conditions.
-                for (final key in ['name', 'times', 'start_date']) {
-                  if (data[key] != null) {
-                    medication!.prescription[key] = data[key];
-                  } else {
-                    missing.add(mapping[key]!);
-                  }
-                }
-                medication!.prescription['x_days'] = data['x_days'];
-                medication!.prescription['dosage'] = data['dosage'];
-                medication!.prescription['end_date'] = data['end_date'];
-                medication!.notificationSettings['left_behind'] =
-                    data['left_behind'];
-                medication!.notificationSettings['push'] = data['push'];
-                medication!.notificationSettings['contacts'] = data['contacts'];
-
-                if (missing.isEmpty) {
+                if (medication!.isValid) {
                   if (isNew) {
                     // Add medication to list.
                     medications.add(medication!);
                   }
                   Navigator.pop(context);
-                } else if (missing.isNotEmpty) {
-                  showAlertDialogOkay(context, missing.join(', '));
+                } else {
+                  showAlertDialogOkay(context, medication!.missing.join(', '));
                 }
               },
             ),
@@ -352,6 +316,10 @@ class EditMedicationState extends State<EditMedication> {
             ElevatedButton(
               child: const Text('Cancel'),
               onPressed: () {
+                // Reset the medication to it's original state.
+                if (!isNew) {
+                  medication!.copyFrom(originalMedication);
+                }
                 Navigator.pop(context);
               },
             ),

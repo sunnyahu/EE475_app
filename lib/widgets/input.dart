@@ -12,11 +12,11 @@ import 'package:flutter/material.dart';
 class Input extends StatelessWidget {
   final GlobalKey<FormState> formKey;
   final String text;
-  final Map<String, dynamic> data;
+  final dynamic object;
   final String dataKey;
   final bool isPhone;
 
-  Input(this.text, this.data, this.dataKey, this.isPhone, this.formKey);
+  Input(this.text, this.object, this.dataKey, this.isPhone, this.formKey);
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class Input extends StatelessWidget {
               // Different keyboards for different data types (phone number vs text)
               keyboardType: isPhone ? TextInputType.phone : TextInputType.text,
               onSaved: (value) {
-                data[dataKey] = value;
+                object.set(dataKey, value);
               },
               decoration: InputDecoration(
                 hintText: text,

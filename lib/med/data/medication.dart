@@ -3,74 +3,164 @@
 /// This file stores the "Medication" class which stores all information
 /// related to the medication entered by the user.
 
+import 'dart:convert';
+import 'package:json_annotation/json_annotation.dart';
+
 import '../../contact/data/contact.dart';
 
+part 'medication.g.dart';
+
+@JsonSerializable()
 class Medication {
   late int id;
-  late Map<String, dynamic> prescription;
-  late Map<String, dynamic> history;
-  late Map<String, dynamic> notificationSettings;
+  late String? name; // Name of the medication
+  late int xDays; // Every X Number of days to take the medication
+  late DateTime? startDate; // Start date of the medication
+  late DateTime? endDate; // End date of the medication
+  late List<DateTime> times; // Times of day to take the medication
+  late int dosage; // Dosage of the medication
+  late List<DateTime> dosageHistory; // History of the dosage of the medication
+  late bool leftBehind; // Notify the user if the medication is left behind
+  late bool push; // Send push notifications related to the medication
+  late List<Contact> contacts; // Contacts to notify about the medication
 
   Medication(this.id) {
-    prescription = {
-      'name': null, // Medication Name
-      'x_days': 1, // Take medication every X days
-      'start_date': null, // Start Date
-      'end_date': null, // End Date
-      'times': <DateTime>[], // Times user should take the medication every day
-      'dosage': null, // Number of pills/medication to take for each times.
-    };
-    history = {
-      'dosage': <DateTime>[],
-      'notifications': <Map<DateTime, String>>[],
-    };
-    notificationSettings = {
-      'left_behind': false, // Notification for leaving bottle behind
-      'push': false, // Dis/enable push notifications
-      'social': <Contact>[],
-    };
+    name = null;
+    xDays = 1;
+    startDate = null;
+    endDate = null;
+    times = [];
+    dosage = 1;
+    dosageHistory = [];
+    leftBehind = false;
+    push = false;
+    contacts = [];
   }
 
-  Medication.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    prescription = {
-      'name': json['prescription']['name'],
-      'x_days': int.parse(json['prescription']['x_days']),
-      'start_date': DateTime.parse(json['prescription']['start_date']),
-      'end_date': json['end_date'] == 'null'
-          ? null
-          : DateTime.parse(json['prescription']['end_date']),
-      'times': json['prescription']['times']
-          .map((time) => DateTime.parse(time))
-          .toList(),
-      'dosage': int.parse(json['prescription']['dosage']),
-    };
-    history = json['history'];
-    notificationSettings = json['notification_settings'];
+  bool get isValid => name != null && startDate != null && times.isNotEmpty;
+
+  List<String> get missing {
+    List<String> missing = [];
+    if (name == null) {
+      missing.add('Name');
+    }
+    if (startDate == null) {
+      missing.add('Start Date');
+    }
+    if (times.isEmpty) {
+      missing.add('Times');
+    }
+    return missing;
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'prescription': {
-        'name': prescription['name'],
-        'x_days': prescription['x_days'],
-        'start_date': prescription['start_date'].toString(),
-        'end_date': prescription['end_date'].toString(),
-        'times': prescription['times'].map((time) => time.toString()).toList(),
-        'dosage': prescription['dosage'].toString(),
-      },
-      'history': {
-        'dosage': history['dosage'].map((time) => time.toString()).toList(),
-        'notifications': history['notifications'],
-      },
-      'notification_settings': {
-        'left_behind': notificationSettings['left_behind'].toString(),
-        'push': notificationSettings['push'].toString(),
-        'social': notificationSettings['social']
-            .map((contact) => contact.toJson())
-            .toList(),
-      }
-    };
+  dynamic get(String key) {
+    switch (key) {
+      case 'id':
+        return id;
+      case 'name':
+        return name;
+      case 'xDays':
+        return xDays;
+      case 'startDate':
+        return startDate;
+      case 'endDate':
+        return endDate;
+      case 'times':
+        return times;
+      case 'dosage':
+        return dosage;
+      case 'dosageHistory':
+        return dosageHistory;
+      case 'leftBehind':
+        return leftBehind;
+      case 'push':
+        return push;
+      case 'contacts':
+        return contacts;
+      default:
+        return null;
+    }
   }
+
+  void set(String key, dynamic value) {
+    switch (key) {
+      case 'id':
+        id = value;
+        break;
+      case 'name':
+        name = value;
+        break;
+      case 'xDays':
+        xDays = value;
+        break;
+      case 'startDate':
+        startDate = value;
+        break;
+      case 'endDate':
+        endDate = value;
+        break;
+      case 'times':
+        times = value;
+        break;
+      case 'dosage':
+        dosage = value;
+        break;
+      case 'dosageHistory':
+        dosageHistory = value;
+        break;
+      case 'leftBehind':
+        leftBehind = value;
+        break;
+      case 'push':
+        push = value;
+        break;
+      case 'contacts':
+        contacts = value;
+        break;
+    }
+  }
+
+  Medication copy() {
+    Medication result = Medication(id);
+    result.name = name;
+    result.xDays = xDays;
+    if (startDate == null) {
+      result.startDate = null;
+    } else {
+      result.startDate = DateTime.parse(startDate!.toIso8601String());
+    }
+    if (endDate == null) {
+      result.endDate = null;
+    } else {
+      result.endDate = DateTime.parse(endDate!.toIso8601String());
+    }
+    result.times.addAll(times.map((e) => DateTime.parse(e.toIso8601String())));
+    result.dosage = dosage;
+    result.dosageHistory
+        .addAll(dosageHistory.map((e) => DateTime.parse(e.toIso8601String())));
+    result.leftBehind = leftBehind;
+    result.push = push;
+    result.contacts.addAll(contacts.map((e) => e.copy()));
+    return result;
+  }
+
+  void copyFrom(Medication other) {
+    Medication medication = other.copy();
+    id = medication.id;
+    name = medication.name;
+    xDays = medication.xDays;
+    startDate = medication.startDate;
+    endDate = medication.endDate;
+    times = medication.times;
+    dosage = medication.dosage;
+    dosageHistory = medication.dosageHistory;
+    leftBehind = medication.leftBehind;
+    push = medication.push;
+    contacts = medication.contacts;
+  }
+
+  factory Medication.fromJson(Map<String, dynamic> json) =>
+      _$MedicationFromJson(json);
+
+  Map<String, dynamic> toJson() => _$MedicationToJson(this);
 }
