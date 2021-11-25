@@ -23,9 +23,7 @@ class EditContact extends StatefulWidget {
 
   const EditContact(this.contacts, this.contact, {Key? key}) : super(key: key);
   @override
-  State<StatefulWidget> createState() {
-    return EditContactState(contacts, contact);
-  }
+  State<StatefulWidget> createState() => EditContactState(contacts, contact);
 }
 
 class EditContactState extends State<EditContact> {
@@ -61,9 +59,20 @@ class EditContactState extends State<EditContact> {
         ),
         body: ListView(
           children: <Widget>[
-            Input('${!isNew ? "Update " : ""}Contact Name', contact, 'name',
-                false, contactName),
-            Input('Phone Number', contact, 'phoneNumber', true, phoneNumber),
+            Input(
+              '${!isNew ? "Update " : ""}Contact Name', // Page Title
+              contact, // Contact to update.
+              'name', // Field to update.
+              false, // Keyboard type is phone input.
+              contactName, // Key for form field.
+            ),
+            Input(
+              'Phone Number', // Page Title.
+              contact, // Contact to update.
+              'phoneNumber', // Field to update.
+              true, // Keyboard type is text input.
+              phoneNumber, // Key for form field.
+            ),
             isNew
                 ? const SizedBox.shrink()
                 : ListTile(
@@ -103,9 +112,7 @@ class EditContactState extends State<EditContact> {
             ElevatedButton(
               child: const Text('Cancel'),
               onPressed: () {
-                if (!isNew) {
-                  contact!.copyFrom(originalContact);
-                }
+                contact!.copyFrom(originalContact);
                 Navigator.pop(context);
               },
             ),

@@ -15,6 +15,8 @@ class Contact {
     phoneNumber = null;
   }
 
+  String get id => "$name$phoneNumber";
+
   bool get isValid => name != null && phoneNumber != null;
 
   String get missing {

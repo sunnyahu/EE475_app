@@ -18,9 +18,8 @@ class SelectContacts extends StatefulWidget {
       : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return SelectContactsState(contacts, medication);
-  }
+  State<StatefulWidget> createState() =>
+      SelectContactsState(contacts, medication);
 }
 
 class SelectContactsState extends State<SelectContacts> {

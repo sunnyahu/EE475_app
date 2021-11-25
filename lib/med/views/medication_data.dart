@@ -27,9 +27,8 @@ class MedicationData extends StatefulWidget {
       : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return MedicationDataState(medications, contacts, medication);
-  }
+  State<StatefulWidget> createState() =>
+      MedicationDataState(medications, contacts, medication);
 }
 
 class MedicationDataState extends State<MedicationData> {

@@ -19,15 +19,14 @@ class ListMedications extends StatefulWidget {
       : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return ListMedicationState(medications, contacts);
-  }
+  State<StatefulWidget> createState() =>
+      ListMedicationState(medications, contacts);
 }
 
 class ListMedicationState extends State<ListMedications> {
   // List of Medications
-  List<Medication> medications;
-  List<Contact> contacts;
+  final List<Medication> medications;
+  final List<Contact> contacts;
 
   ListMedicationState(this.medications, this.contacts);
 

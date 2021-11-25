@@ -31,9 +31,8 @@ class EditMedication extends StatefulWidget {
       {Key? key})
       : super(key: key);
   @override
-  State<StatefulWidget> createState() {
-    return EditMedicationState(medications, contacts, medication);
-  }
+  State<StatefulWidget> createState() =>
+      EditMedicationState(medications, contacts, medication);
 }
 
 class EditMedicationState extends State<EditMedication> {
@@ -73,19 +72,15 @@ class EditMedicationState extends State<EditMedication> {
       timesString = "Times: ${medication.times.map((time) {
         return "${time.hour}:${time.minute}${time.minute == 0 ? '0' : ''}";
       }).join(', ')}";
+
       DateTime? start = medication.startDate;
-      if (start != null) {
-        startDateString =
-            "Start Date: ${start.day}/${start.month}/${start.year}";
-      } else {
-        startDateString = "Start Date";
-      }
+      startDateString = start == null
+          ? "Start Date"
+          : "Start Date: ${start.day}/${start.month}/${start.year}";
       DateTime? end = medication.endDate;
-      if (end != null) {
-        endDateString = "End Date: ${end.month}-${end.day}-${end.year}";
-      } else {
-        endDateString = "End Date";
-      }
+      endDateString = end == null
+          ? "End Date"
+          : "End Date: ${end.month}-${end.day}-${end.year}";
       contactsString =
           "Select Contacts: ${medication.contacts.map((contact) => contact.name).join(', ')}";
     }

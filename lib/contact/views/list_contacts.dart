@@ -15,9 +15,7 @@ class ListContacts extends StatefulWidget {
   const ListContacts(this.contacts, {Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return ListContactsState(contacts);
-  }
+  State<StatefulWidget> createState() => ListContactsState(contacts);
 }
 
 class ListContactsState extends State<ListContacts> {

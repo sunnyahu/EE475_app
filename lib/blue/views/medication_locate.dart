@@ -15,9 +15,7 @@ class LocateMedication extends StatefulWidget {
   const LocateMedication(this.med, {Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return LocateMedicationState();
-  }
+  State<StatefulWidget> createState() => LocateMedicationState();
 }
 
 class LocateMedicationState extends State<LocateMedication> {
