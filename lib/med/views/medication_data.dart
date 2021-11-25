@@ -16,12 +16,15 @@ import '../../blue/views/medication_locate.dart';
 import '../../widgets/alert_dialog.dart';
 import '../../contact/data/contact.dart';
 
+@immutable
 class MedicationData extends StatefulWidget {
-  List<Medication> medications;
-  List<Contact> contacts;
-  Medication medication;
+  final List<Medication> medications;
+  final List<Contact> contacts;
+  final Medication medication;
 
-  MedicationData(this.medications, this.contacts, this.medication);
+  const MedicationData(this.medications, this.contacts, this.medication,
+      {Key? key})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {

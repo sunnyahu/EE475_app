@@ -9,6 +9,7 @@
 
 import 'package:flutter/material.dart';
 
+@immutable
 class Input extends StatelessWidget {
   final GlobalKey<FormState> formKey;
   final String text;
@@ -16,7 +17,9 @@ class Input extends StatelessWidget {
   final String dataKey;
   final bool isPhone;
 
-  Input(this.text, this.object, this.dataKey, this.isPhone, this.formKey);
+  const Input(this.text, this.object, this.dataKey, this.isPhone, this.formKey,
+      {Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

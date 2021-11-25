@@ -7,14 +7,14 @@ import 'package:flutter/material.dart';
 
 import '../../med/data/medication.dart';
 
+@immutable
 class TimeSelect extends StatefulWidget {
   final Medication medication;
 
-  TimeSelect(this.medication);
+  const TimeSelect(this.medication, {Key? key}) : super(key: key);
+
   @override
-  State<StatefulWidget> createState() {
-    return TimeSelectState(medication);
-  }
+  State<StatefulWidget> createState() => TimeSelectState(medication);
 }
 
 class TimeSelectState extends State<TimeSelect> {

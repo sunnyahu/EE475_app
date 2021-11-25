@@ -8,11 +8,13 @@ import 'package:flutter/material.dart';
 import '../../contact/data/contact.dart';
 import '../../contact/views/edit_contact.dart';
 
+@immutable
 class ListContacts extends StatefulWidget {
-  List<Contact> contacts;
-  @override
-  ListContacts(this.contacts);
+  final List<Contact> contacts;
 
+  const ListContacts(this.contacts, {Key? key}) : super(key: key);
+
+  @override
   State<StatefulWidget> createState() {
     return ListContactsState(contacts);
   }

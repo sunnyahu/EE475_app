@@ -7,12 +7,14 @@ import 'package:table_calendar/table_calendar.dart';
 
 import '../../med/data/medication.dart';
 
+@immutable
 class Calendar extends StatefulWidget {
-  String text;
-  String date;
-  Medication medication;
+  final String text;
+  final String date;
+  final Medication medication;
 
-  Calendar(this.text, this.date, this.medication);
+  const Calendar(this.text, this.date, this.medication, {Key? key})
+      : super(key: key);
 
   @override
   CalendarState createState() => CalendarState(text, date, medication);
@@ -26,11 +28,7 @@ class CalendarState extends State<Calendar> {
   String date; // Determines if user is selecting the start or end date.
   Medication medication;
 
-  CalendarState(
-    this.text,
-    this.date,
-    this.medication,
-  ) {
+  CalendarState(this.text, this.date, this.medication) {
     DateTime? dateobj = medication.get(date);
     if (dateobj != null) {
       _focusedDay = dateobj;

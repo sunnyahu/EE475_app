@@ -3,7 +3,6 @@
 /// This file stores the "Medication" class which stores all information
 /// related to the medication entered by the user.
 
-import 'dart:convert';
 import 'package:json_annotation/json_annotation.dart';
 
 import '../../contact/data/contact.dart';
@@ -39,7 +38,7 @@ class Medication {
 
   bool get isValid => name != null && startDate != null && times.isNotEmpty;
 
-  List<String> get missing {
+  String get missing {
     List<String> missing = [];
     if (name == null) {
       missing.add('Name');
@@ -50,7 +49,7 @@ class Medication {
     if (times.isEmpty) {
       missing.add('Times');
     }
-    return missing;
+    return missing.join(', ');
   }
 
   dynamic get(String key) {
@@ -124,16 +123,11 @@ class Medication {
     Medication result = Medication(id);
     result.name = name;
     result.xDays = xDays;
-    if (startDate == null) {
-      result.startDate = null;
-    } else {
-      result.startDate = DateTime.parse(startDate!.toIso8601String());
-    }
-    if (endDate == null) {
-      result.endDate = null;
-    } else {
-      result.endDate = DateTime.parse(endDate!.toIso8601String());
-    }
+    result.startDate =
+        startDate == null ? null : DateTime.parse(startDate!.toIso8601String());
+    result.endDate =
+        endDate == null ? null : DateTime.parse(endDate!.toIso8601String());
+
     result.times.addAll(times.map((e) => DateTime.parse(e.toIso8601String())));
     result.dosage = dosage;
     result.dosageHistory

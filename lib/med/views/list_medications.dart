@@ -10,12 +10,15 @@ import '../../med/views/edit_medication.dart';
 import '../../med/views/medication_data.dart';
 import '../../contact/data/contact.dart';
 
+@immutable
 class ListMedications extends StatefulWidget {
-  List<Medication> medications;
-  List<Contact> contacts;
-  @override
-  ListMedications(this.medications, this.contacts);
+  final List<Medication> medications;
+  final List<Contact> contacts;
 
+  const ListMedications(this.medications, this.contacts, {Key? key})
+      : super(key: key);
+
+  @override
   State<StatefulWidget> createState() {
     return ListMedicationState(medications, contacts);
   }

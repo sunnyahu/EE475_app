@@ -16,11 +16,12 @@ import '../../widgets/alert_dialog.dart';
 final GlobalKey<FormState> contactName = GlobalKey<FormState>();
 final GlobalKey<FormState> phoneNumber = GlobalKey<FormState>();
 
+@immutable
 class EditContact extends StatefulWidget {
   final List<Contact> contacts;
   final Contact? contact;
 
-  EditContact(this.contacts, this.contact);
+  const EditContact(this.contacts, this.contact, {Key? key}) : super(key: key);
   @override
   State<StatefulWidget> createState() {
     return EditContactState(contacts, contact);
@@ -94,7 +95,7 @@ class EditContactState extends State<EditContact> {
                   }
                   Navigator.pop(context);
                 } else {
-                  showAlertDialogOkay(context, contact!.missing.join(', '));
+                  showAlertDialogOkay(context, contact!.missing);
                 }
               },
             ),

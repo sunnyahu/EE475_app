@@ -6,17 +6,20 @@ import 'package:flutter/material.dart';
 
 import '../../med/data/medication.dart';
 
+@immutable
 class NumberSelect extends StatefulWidget {
   final Medication medication;
-  int count;
-  String keyName;
-  String text;
+  final int count;
+  final String keyName;
+  final String text;
 
-  NumberSelect(this.medication, this.count, this.keyName, this.text);
+  const NumberSelect(this.medication, this.count, this.keyName, this.text,
+      {Key? key})
+      : super(key: key);
+
   @override
-  State<StatefulWidget> createState() {
-    return NumberSelectState(medication, count, keyName, text);
-  }
+  State<StatefulWidget> createState() =>
+      NumberSelectState(medication, count, keyName, text);
 }
 
 class NumberSelectState extends State<NumberSelect> {

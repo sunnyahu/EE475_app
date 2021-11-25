@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../med/data/medication.dart';
-
 // Shows an alert dialog to tell user to enter required information.
 // Only used as a notifier with an "Okay" button.
 // Only used in the "edit_medication.dart" file.

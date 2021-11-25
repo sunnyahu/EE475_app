@@ -18,14 +18,13 @@ void main() {
 
 class PillPal extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() {
-    return PillPalState();
-  }
+  State<StatefulWidget> createState() => PillPalState();
 }
 
 class PillPalState extends State<PillPal> {
-  // List of Medications
+  // List of Medications.
   List<Medication> medications = [];
+  // List of Contacts.
   List<Contact> contacts = [];
 
   @override

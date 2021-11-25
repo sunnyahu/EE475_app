@@ -9,12 +9,15 @@ import 'package:flutter/material.dart';
 import '../../contact/data/contact.dart';
 import '../../med/data/medication.dart';
 
+@immutable
 class SelectContacts extends StatefulWidget {
-  List<Contact> contacts;
-  Medication medication;
-  @override
-  SelectContacts(this.contacts, this.medication);
+  final List<Contact> contacts;
+  final Medication medication;
 
+  const SelectContacts(this.contacts, this.medication, {Key? key})
+      : super(key: key);
+
+  @override
   State<StatefulWidget> createState() {
     return SelectContactsState(contacts, medication);
   }

@@ -8,9 +8,9 @@ import 'package:flutter/material.dart';
 import '../../med/data/medication.dart';
 
 class MedicationHistory extends StatelessWidget {
-  Medication medication;
+  final Medication medication;
 
-  MedicationHistory(this.medication);
+  const MedicationHistory(this.medication, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

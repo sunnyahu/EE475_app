@@ -17,7 +17,7 @@ class Contact {
 
   bool get isValid => name != null && phoneNumber != null;
 
-  List<String> get missing {
+  String get missing {
     List<String> missing = [];
     if (name == null) {
       missing.add('Name');
@@ -25,7 +25,7 @@ class Contact {
     if (phoneNumber == null) {
       missing.add('Phone Number');
     }
-    return missing;
+    return missing.join(', ');
   }
 
   Contact copy() {

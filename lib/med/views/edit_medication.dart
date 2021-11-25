@@ -21,12 +21,15 @@ import '../../contact/data/contact.dart';
 
 final GlobalKey<FormState> medicationName = GlobalKey<FormState>();
 
+@immutable
 class EditMedication extends StatefulWidget {
   final List<Medication> medications;
   final List<Contact> contacts;
   final Medication? medication;
 
-  EditMedication(this.medications, this.contacts, this.medication);
+  const EditMedication(this.medications, this.contacts, this.medication,
+      {Key? key})
+      : super(key: key);
   @override
   State<StatefulWidget> createState() {
     return EditMedicationState(medications, contacts, medication);
@@ -102,8 +105,13 @@ class EditMedicationState extends State<EditMedication> {
         ),
         body: ListView(
           children: <Widget>[
-            Input('${!isNew ? "Update " : ""}Prescription/Medication Name',
-                medication!, 'name', false, medicationName),
+            Input(
+              '${!isNew ? "Update " : ""}Prescription/Medication Name', // Textfield label.
+              medication!, // Medication object to modify.
+              'name', // Field name in Medication object to modify.
+              false, // Does the field use a phone keyboard?
+              medicationName, // Form key.
+            ),
             ListTile(
               title: Text("Dosage: ${medication!.dosage}"),
               leading: const Icon(Icons.medication),
@@ -111,8 +119,12 @@ class EditMedicationState extends State<EditMedication> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        NumberSelect(medication!, 10, 'dosage', 'Dosage'),
+                    builder: (context) => NumberSelect(
+                      medication!, // Medication object to modify.
+                      10, // Number of choices, in this case goes from 1-10.
+                      'dosage', // Field name in Medication object to modify.
+                      'Dosage', // Page Title Name.
+                    ),
                   ),
                 ).then((value) {
                   // Reload Page.
@@ -236,8 +248,12 @@ class EditMedicationState extends State<EditMedication> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        NumberSelect(medication!, 30, 'xDays', 'X Days'),
+                    builder: (context) => NumberSelect(
+                      medication!, // Medication object to modify.
+                      30, // Number of choices, in this case goes from 1-30.
+                      'xDays', // Field name in Medication object to modify.
+                      'X Days', // Page Title Name.
+                    ),
                   ),
                 ).then((value) {
                   // Reload Page.
@@ -308,7 +324,7 @@ class EditMedicationState extends State<EditMedication> {
                   }
                   Navigator.pop(context);
                 } else {
-                  showAlertDialogOkay(context, medication!.missing.join(', '));
+                  showAlertDialogOkay(context, medication!.missing);
                 }
               },
             ),

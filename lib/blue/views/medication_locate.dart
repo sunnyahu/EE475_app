@@ -8,10 +8,11 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:pill_pal/blue/data/packets.dart';
 import 'package:pill_pal/med/data/medication.dart';
 
+@immutable
 class LocateMedication extends StatefulWidget {
-  Medication med;
+  final Medication med;
 
-  LocateMedication(this.med, {Key? key}) : super(key: key);
+  const LocateMedication(this.med, {Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
