@@ -57,12 +57,11 @@ class EditMedicationState extends State<EditMedication> {
   EditMedicationState(this.medications, this.contacts, medication) {
     isNew = medication == null;
     if (isNew) {
-      // regsisterBottle(medications).then((value) {
-      //   print("======================Received bottle id: " + value.toString());
-      //   this.medication = Medication(value);
-      // });
-      // print("after registerbottle");
-      this.medication = Medication(0);
+      registerBottle(medications).then((value) {
+        print("======================Received bottle id: " + value.toString());
+        this.medication = Medication(value);
+      });
+      print("after registerbottle");
 
       timesString = "Times";
       startDateString = "Start Date";
@@ -336,7 +335,10 @@ class EditMedicationState extends State<EditMedication> {
                   );
                   Navigator.pop(context);
                 } else {
-                  showAlertDialogOkay(context, medication!.missing);
+                  showAlertDialogOkay(
+                    context,
+                    "Missing ${medication!.missing}",
+                  );
                 }
               },
             ),

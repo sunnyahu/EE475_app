@@ -34,6 +34,7 @@ class PillPalState extends State<PillPal> {
   @override
   void initState() {
     super.initState();
+    // Load medications from json file.
     read(MEDICATIONS_DB).then((json) {
       setState(() {
         if (json.isEmpty) {
@@ -45,6 +46,7 @@ class PillPalState extends State<PillPal> {
         }
       });
     });
+    // Load contacts from json file.
     read(CONTACTS_DB).then((json) {
       setState(() {
         if (json.isEmpty) {

@@ -130,7 +130,10 @@ class EditContactState extends State<EditContact> {
                   );
                   Navigator.pop(context);
                 } else {
-                  showAlertDialogOkay(context, "Missing: ${contact!.missing}");
+                  showAlertDialogOkay(
+                    context,
+                    "Missing: ${contact!.missing}",
+                  );
                 }
               },
             ),
