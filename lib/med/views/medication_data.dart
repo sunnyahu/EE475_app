@@ -22,9 +22,12 @@ class MedicationData extends StatefulWidget {
   final List<Contact> contacts;
   final Medication medication;
 
-  const MedicationData(this.medications, this.contacts, this.medication,
-      {Key? key})
-      : super(key: key);
+  const MedicationData({
+    Key? key,
+    required this.medications,
+    required this.contacts,
+    required this.medication,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() =>
@@ -53,7 +56,9 @@ class MedicationDataState extends State<MedicationData> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => LocateMedication(medication),
+                  builder: (context) => LocateMedication(
+                    medication: medication,
+                  ),
                 ),
               );
             },
@@ -66,7 +71,9 @@ class MedicationDataState extends State<MedicationData> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => MedicationHistory(medication),
+                  builder: (context) => MedicationHistory(
+                    medication: medication,
+                  ),
                 ),
               );
             },
@@ -79,8 +86,11 @@ class MedicationDataState extends State<MedicationData> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      EditMedication(medications, contacts, medication),
+                  builder: (context) => EditMedication(
+                    medications: medications,
+                    contacts: contacts,
+                    medication: medication,
+                  ),
                 ),
               ).then((value) {
                 // Reload Home Page once the user enters their medication
@@ -98,6 +108,7 @@ class MedicationDataState extends State<MedicationData> {
                 "Are you sure you want to delete this medication?",
                 context,
                 medications,
+                contacts,
                 medication,
               );
             },

@@ -13,9 +13,13 @@ class NumberSelect extends StatefulWidget {
   final String keyName;
   final String text;
 
-  const NumberSelect(this.medication, this.count, this.keyName, this.text,
-      {Key? key})
-      : super(key: key);
+  const NumberSelect({
+    Key? key,
+    required this.medication,
+    required this.count,
+    required this.keyName,
+    required this.text,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() =>

@@ -10,9 +10,12 @@ import 'package:pill_pal/med/data/medication.dart';
 
 @immutable
 class LocateMedication extends StatefulWidget {
-  final Medication med;
+  final Medication medication;
 
-  const LocateMedication(this.med, {Key? key}) : super(key: key);
+  const LocateMedication({
+    Key? key,
+    required this.medication,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => LocateMedicationState();
@@ -38,14 +41,14 @@ class LocateMedicationState extends State<LocateMedication> {
               flutterBlue.stopScan();
               devices.clear();
               setState(() {});
-              print("Searching for : " + widget.med.id.toString());
+              print("Searching for : " + widget.medication.id.toString());
               var scan = flutterBlue.startScan();
               flutterBlue.scanResults.listen((results) {
                 if (results.isNotEmpty) {
                   for (ScanResult result in results) {
                     if (Packet.isPillPalPacket(result) &&
                         Packet.getType(result) == PacketType.beacon &&
-                        Packet.getId(result) == widget.med.id) {
+                        Packet.getId(result) == widget.medication.id) {
                       devices.clear();
                       devices.add(result);
                       setState(() {});

@@ -18,6 +18,7 @@ import '../../widgets/time_select.dart';
 import '../../widgets/number_select.dart';
 import '../../widgets/alert_dialog.dart';
 import '../../contact/data/contact.dart';
+import '../../db/database.dart';
 
 final GlobalKey<FormState> medicationName = GlobalKey<FormState>();
 
@@ -27,9 +28,13 @@ class EditMedication extends StatefulWidget {
   final List<Contact> contacts;
   final Medication? medication;
 
-  const EditMedication(this.medications, this.contacts, this.medication,
-      {Key? key})
-      : super(key: key);
+  const EditMedication({
+    Key? key,
+    required this.medications,
+    required this.contacts,
+    required this.medication,
+  }) : super(key: key);
+
   @override
   State<StatefulWidget> createState() =>
       EditMedicationState(medications, contacts, medication);
@@ -101,11 +106,12 @@ class EditMedicationState extends State<EditMedication> {
         body: ListView(
           children: <Widget>[
             Input(
-              '${!isNew ? "Update " : ""}Prescription/Medication Name', // Textfield label.
-              medication!, // Medication object to modify.
-              'name', // Field name in Medication object to modify.
-              false, // Does the field use a phone keyboard?
-              medicationName, // Form key.
+              text:
+                  '${!isNew ? "Update " : ""}Prescription/Medication Name', // Textfield label.
+              object: medication!, // Medication object to modify.
+              dataKey: 'name', // Field name in Medication object to modify.
+              isPhone: false, // Does the field use a phone keyboard?
+              formKey: medicationName, // Form key.
             ),
             ListTile(
               title: Text("Dosage: ${medication!.dosage}"),
@@ -115,10 +121,10 @@ class EditMedicationState extends State<EditMedication> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => NumberSelect(
-                      medication!, // Medication object to modify.
-                      10, // Number of choices, in this case goes from 1-10.
-                      'dosage', // Field name in Medication object to modify.
-                      'Dosage', // Page Title Name.
+                      medication: medication!, // Medication object to modify.
+                      count: 10, // Number of choices, goes from 1-10.
+                      keyName: 'dosage', // Field name in Medication to modify.
+                      text: 'Dosage', // Page Title Name.
                     ),
                   ),
                 ).then((value) {
@@ -146,7 +152,7 @@ class EditMedicationState extends State<EditMedication> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => TimeSelect(medication!),
+                    builder: (context) => TimeSelect(medication: medication!),
                   ),
                 ).then((value) {
                   // Reload Page.
@@ -182,9 +188,9 @@ class EditMedicationState extends State<EditMedication> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => Calendar(
-                      'Start Date',
-                      'startDate', // Field name in medication object.
-                      medication!,
+                      text: 'Start Date',
+                      date: 'startDate', // Field name in medication object.
+                      medication: medication!,
                     ),
                   ),
                 ).then((value) {
@@ -219,9 +225,9 @@ class EditMedicationState extends State<EditMedication> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => Calendar(
-                      'End Date',
-                      'endDate', // Field name in medication object.
-                      medication!,
+                      text: 'End Date',
+                      date: 'endDate', // Field name in medication object.
+                      medication: medication!,
                     ),
                   ),
                 ).then((value) {
@@ -244,10 +250,10 @@ class EditMedicationState extends State<EditMedication> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => NumberSelect(
-                      medication!, // Medication object to modify.
-                      30, // Number of choices, in this case goes from 1-30.
-                      'xDays', // Field name in Medication object to modify.
-                      'X Days', // Page Title Name.
+                      medication: medication!, // Medication object to modify.
+                      count: 30, // Number of choices, goes from 1-30.
+                      keyName: 'xDays', // Field name in Medication to modify.
+                      text: 'X Days', // Page Title Name.
                     ),
                   ),
                 ).then((value) {
@@ -295,7 +301,10 @@ class EditMedicationState extends State<EditMedication> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SelectContacts(contacts, medication!),
+                    builder: (context) => SelectContacts(
+                      contacts: contacts,
+                      medication: medication!,
+                    ),
                   ),
                 ).then((value) {
                   // Reload Page.
@@ -317,6 +326,14 @@ class EditMedicationState extends State<EditMedication> {
                     // Add medication to list.
                     medications.add(medication!);
                   }
+                  // Save medication to file.
+                  write(
+                    MEDICATIONS_DB,
+                    {
+                      'medications':
+                          medications.map((m) => m.toJson()).toList(),
+                    },
+                  );
                   Navigator.pop(context);
                 } else {
                   showAlertDialogOkay(context, medication!.missing);

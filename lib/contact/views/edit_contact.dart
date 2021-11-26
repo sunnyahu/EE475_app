@@ -7,10 +7,12 @@
 ///
 
 import 'package:flutter/material.dart';
+import 'package:pill_pal/db/database.dart';
 
 import '../../widgets/input.dart';
 import '../../contact/data/contact.dart';
 import '../../widgets/alert_dialog.dart';
+import '../../med/data/medication.dart';
 
 // Keys for the form fields (text inputs).
 final GlobalKey<FormState> contactName = GlobalKey<FormState>();
@@ -18,22 +20,33 @@ final GlobalKey<FormState> phoneNumber = GlobalKey<FormState>();
 
 @immutable
 class EditContact extends StatefulWidget {
+  final List<Medication> medications;
   final List<Contact> contacts;
   final Contact? contact;
 
-  const EditContact(this.contacts, this.contact, {Key? key}) : super(key: key);
+  const EditContact({
+    Key? key,
+    required this.medications,
+    required this.contacts,
+    required this.contact,
+  }) : super(key: key);
   @override
-  State<StatefulWidget> createState() => EditContactState(contacts, contact);
+  State<StatefulWidget> createState() => EditContactState(
+        medications,
+        contacts,
+        contact,
+      );
 }
 
 class EditContactState extends State<EditContact> {
+  final List<Medication> medications;
   late Contact originalContact;
   Contact? contact;
   final List<Contact> contacts;
 
   late bool isNew;
 
-  EditContactState(this.contacts, contact) {
+  EditContactState(this.medications, this.contacts, contact) {
     isNew = contact == null;
     if (isNew) {
       this.contact = Contact();
@@ -60,18 +73,18 @@ class EditContactState extends State<EditContact> {
         body: ListView(
           children: <Widget>[
             Input(
-              '${!isNew ? "Update " : ""}Contact Name', // Page Title
-              contact, // Contact to update.
-              'name', // Field to update.
-              false, // Keyboard type is phone input.
-              contactName, // Key for form field.
+              text: '${!isNew ? "Update " : ""}Contact Name', // Page Title
+              object: contact, // Contact to update.
+              dataKey: 'name', // Field to update.
+              isPhone: false, // Keyboard type is phone input.
+              formKey: contactName, // Key for form field.
             ),
             Input(
-              'Phone Number', // Page Title.
-              contact, // Contact to update.
-              'phoneNumber', // Field to update.
-              true, // Keyboard type is text input.
-              phoneNumber, // Key for form field.
+              text: 'Phone Number', // Page Title.
+              object: contact, // Contact to update.
+              dataKey: 'phoneNumber', // Field to update.
+              isPhone: true, // Keyboard type is text input.
+              formKey: phoneNumber, // Key for form field.
             ),
             isNew
                 ? const SizedBox.shrink()
@@ -90,6 +103,7 @@ class EditContactState extends State<EditContact> {
                         "Delete Contact",
                         "Are you sure you want to delete this contact?",
                         context,
+                        medications,
                         contacts,
                         contact!,
                       );
@@ -100,11 +114,23 @@ class EditContactState extends State<EditContact> {
               onPressed: () {
                 if (contact!.isValid) {
                   if (isNew) {
+                    // Check if contact exists by checking id.
+                    if (contacts.where((c) => c.id == contact!.id).isNotEmpty) {
+                      showAlertDialogOkay(
+                        context,
+                        "This contact already exists.",
+                      );
+                      return;
+                    }
                     contacts.add(contact!);
                   }
+                  write(
+                    CONTACTS_DB,
+                    {'contacts': contacts.map((c) => c.toJson()).toList()},
+                  );
                   Navigator.pop(context);
                 } else {
-                  showAlertDialogOkay(context, contact!.missing);
+                  showAlertDialogOkay(context, "Missing: ${contact!.missing}");
                 }
               },
             ),
@@ -112,7 +138,9 @@ class EditContactState extends State<EditContact> {
             ElevatedButton(
               child: const Text('Cancel'),
               onPressed: () {
-                contact!.copyFrom(originalContact);
+                if (!isNew) {
+                  contact!.copyFrom(originalContact);
+                }
                 Navigator.pop(context);
               },
             ),

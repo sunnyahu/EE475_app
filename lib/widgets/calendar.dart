@@ -13,8 +13,12 @@ class Calendar extends StatefulWidget {
   final String date;
   final Medication medication;
 
-  const Calendar(this.text, this.date, this.medication, {Key? key})
-      : super(key: key);
+  const Calendar({
+    Key? key,
+    required this.text,
+    required this.date,
+    required this.medication,
+  }) : super(key: key);
 
   @override
   CalendarState createState() => CalendarState(text, date, medication);

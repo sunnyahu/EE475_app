@@ -9,14 +9,18 @@ import '../../med/data/medication.dart';
 import '../../med/views/list_medications.dart';
 import '../../contact/data/contact.dart';
 import '../../contact/views/list_contacts.dart';
+import '../../db/database.dart';
 
 void main() {
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
     home: PillPal(),
   ));
 }
 
+@immutable
 class PillPal extends StatefulWidget {
+  const PillPal({Key? key}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() => PillPalState();
 }
@@ -26,6 +30,33 @@ class PillPalState extends State<PillPal> {
   List<Medication> medications = [];
   // List of Contacts.
   List<Contact> contacts = [];
+
+  @override
+  void initState() {
+    super.initState();
+    read(MEDICATIONS_DB).then((json) {
+      setState(() {
+        if (json.isEmpty) {
+          medications = [];
+        } else {
+          medications = json['medications']
+              .map<Medication>((m) => Medication.fromJson(m))
+              .toList();
+        }
+      });
+    });
+    read(CONTACTS_DB).then((json) {
+      setState(() {
+        if (json.isEmpty) {
+          contacts = [];
+        } else {
+          contacts = json['contacts']
+              .map<Contact>((c) => Contact.fromJson(c))
+              .toList();
+        }
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +74,10 @@ class PillPalState extends State<PillPal> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          ListMedications(medications, contacts),
+                      builder: (context) => ListMedications(
+                        medications: medications,
+                        contacts: contacts,
+                      ),
                     ),
                   );
                 },
@@ -56,7 +89,10 @@ class PillPalState extends State<PillPal> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ListContacts(contacts),
+                      builder: (context) => ListContacts(
+                        medications: medications,
+                        contacts: contacts,
+                      ),
                     ),
                   );
                 },

@@ -14,8 +14,11 @@ class SelectContacts extends StatefulWidget {
   final List<Contact> contacts;
   final Medication medication;
 
-  const SelectContacts(this.contacts, this.medication, {Key? key})
-      : super(key: key);
+  const SelectContacts({
+    Key? key,
+    required this.contacts,
+    required this.medication,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() =>

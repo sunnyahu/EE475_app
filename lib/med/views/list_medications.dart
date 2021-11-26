@@ -15,8 +15,11 @@ class ListMedications extends StatefulWidget {
   final List<Medication> medications;
   final List<Contact> contacts;
 
-  const ListMedications(this.medications, this.contacts, {Key? key})
-      : super(key: key);
+  const ListMedications({
+    Key? key,
+    required this.medications,
+    required this.contacts,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() =>
@@ -55,8 +58,11 @@ class ListMedicationState extends State<ListMedications> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            MedicationData(medications, contacts, medication),
+                        builder: (context) => MedicationData(
+                          medications: medications,
+                          contacts: contacts,
+                          medication: medication,
+                        ),
                       ),
                     ).then((value) {
                       // Reload Home Page once the user enters their medication.
@@ -75,7 +81,11 @@ class ListMedicationState extends State<ListMedications> {
             context,
             MaterialPageRoute(
               // scan_new_bottle.dart view
-              builder: (context) => EditMedication(medications, contacts, null),
+              builder: (context) => EditMedication(
+                medications: medications,
+                contacts: contacts,
+                medication: null,
+              ),
             ),
           ).then((value) {
             // Reload Home Page once the user enters their medication.
@@ -84,6 +94,7 @@ class ListMedicationState extends State<ListMedications> {
         },
         child: const Icon(Icons.add),
         backgroundColor: Colors.blue,
+        tooltip: 'Add Medication',
       ),
     );
   }

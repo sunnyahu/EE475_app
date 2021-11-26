@@ -11,7 +11,10 @@ import '../../med/data/medication.dart';
 class TimeSelect extends StatefulWidget {
   final Medication medication;
 
-  const TimeSelect(this.medication, {Key? key}) : super(key: key);
+  const TimeSelect({
+    Key? key,
+    required this.medication,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => TimeSelectState(medication);

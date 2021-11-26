@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:pill_pal/db/database.dart';
+
+import '../../med/data/medication.dart';
+import '../../contact/data/contact.dart';
 
 // Shows an alert dialog to tell user to enter required information.
 // Only used as a notifier with an "Okay" button.
@@ -14,8 +18,8 @@ showAlertDialogOkay(BuildContext context, String message) {
   );
   // set up the AlertDialog
   AlertDialog alert = AlertDialog(
-    title: const Text('Missing Required Information'),
-    content: Text('Missing: $message'),
+    title: const Text('Error'),
+    content: Text(message),
     actions: [
       okayButton,
     ],
@@ -36,7 +40,8 @@ showAlertDialogYesNo(
   String headerText,
   String descriptionText,
   BuildContext context,
-  List<Object> objects,
+  List<Medication> medications,
+  List<Contact> contacts,
   Object object,
 ) {
   // set up the buttons
@@ -50,7 +55,28 @@ showAlertDialogYesNo(
   Widget continueButton = TextButton(
     child: const Text('Yes'),
     onPressed: () {
-      objects.remove(object);
+      if (headerText.endsWith('Medication')) {
+        medications.remove(object);
+        write(
+          MEDICATIONS_DB,
+          {'medications': medications.map((m) => m.toJson()).toList()},
+        );
+      } else if (headerText.endsWith('Contact')) {
+        contacts.remove(object);
+        write(
+          CONTACTS_DB,
+          {'contacts': contacts.map((c) => c.toJson()).toList()},
+        );
+        // If contact was deleted, we delete them from every medication.
+        for (Medication m in medications) {
+          for (Contact c in m.contacts) {
+            if (c.id == (object as Contact).id) {
+              m.contacts.remove(c);
+              break;
+            }
+          }
+        }
+      }
       // Close the dialog window.
       Navigator.of(context, rootNavigator: true).pop();
       // Close the current page since the user just deleted this object.

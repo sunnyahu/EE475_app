@@ -7,22 +7,33 @@ import 'package:flutter/material.dart';
 
 import '../../contact/data/contact.dart';
 import '../../contact/views/edit_contact.dart';
+import '../../med/data/medication.dart';
 
 @immutable
 class ListContacts extends StatefulWidget {
+  final List<Medication> medications;
   final List<Contact> contacts;
 
-  const ListContacts(this.contacts, {Key? key}) : super(key: key);
+  const ListContacts({
+    Key? key,
+    required this.medications,
+    required this.contacts,
+  }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => ListContactsState(contacts);
+  State<StatefulWidget> createState() => ListContactsState(
+        medications,
+        contacts,
+      );
 }
 
 class ListContactsState extends State<ListContacts> {
-  // List of Medications
+  // List of Medications.
+  final List<Medication> medications;
+  // List of Contacts.
   List<Contact> contacts;
 
-  ListContactsState(this.contacts);
+  ListContactsState(this.medications, this.contacts);
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +60,11 @@ class ListContactsState extends State<ListContacts> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => EditContact(contacts, contact),
+                        builder: (context) => EditContact(
+                          medications: medications,
+                          contacts: contacts,
+                          contact: contact,
+                        ),
                       ),
                     ).then((value) {
                       // Reload Home Page once the user enters a contact.
@@ -68,7 +83,11 @@ class ListContactsState extends State<ListContacts> {
             context,
             MaterialPageRoute(
               // scan_new_bottle.dart view
-              builder: (context) => EditContact(contacts, null),
+              builder: (context) => EditContact(
+                medications: medications,
+                contacts: contacts,
+                contact: null,
+              ),
             ),
           ).then((value) {
             // Reload Home Page once the user enters their medication.
@@ -77,6 +96,7 @@ class ListContactsState extends State<ListContacts> {
         },
         child: const Icon(Icons.add),
         backgroundColor: Colors.blue,
+        tooltip: 'Add Contact',
       ),
     );
   }

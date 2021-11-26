@@ -17,9 +17,14 @@ class Input extends StatelessWidget {
   final String dataKey;
   final bool isPhone;
 
-  const Input(this.text, this.object, this.dataKey, this.isPhone, this.formKey,
-      {Key? key})
-      : super(key: key);
+  const Input({
+    Key? key,
+    required this.text,
+    required this.object,
+    required this.dataKey,
+    required this.isPhone,
+    required this.formKey,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

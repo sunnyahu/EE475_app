@@ -10,7 +10,10 @@ import '../../med/data/medication.dart';
 class MedicationHistory extends StatelessWidget {
   final Medication medication;
 
-  const MedicationHistory(this.medication, {Key? key}) : super(key: key);
+  const MedicationHistory({
+    Key? key,
+    required this.medication,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
