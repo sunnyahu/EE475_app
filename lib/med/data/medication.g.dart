@@ -9,6 +9,7 @@ part of 'medication.dart';
 Medication _$MedicationFromJson(Map<String, dynamic> json) => Medication(
       json['id'] as int,
     )
+      ..seqNum = json['seqNum'] as int
       ..name = json['name'] as String?
       ..xDays = json['xDays'] as int
       ..startDate = json['startDate'] == null
@@ -33,6 +34,7 @@ Medication _$MedicationFromJson(Map<String, dynamic> json) => Medication(
 Map<String, dynamic> _$MedicationToJson(Medication instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'seqNum': instance.seqNum,
       'name': instance.name,
       'xDays': instance.xDays,
       'startDate': instance.startDate?.toIso8601String(),

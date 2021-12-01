@@ -41,6 +41,7 @@ class EditMedication extends StatefulWidget {
 }
 
 class EditMedicationState extends State<EditMedication> {
+  final Medication? medication;
   final List<Medication> medications;
   final List<Contact> contacts;
   // If the user is adding a new medication "isNew" is true.
@@ -54,10 +55,10 @@ class EditMedicationState extends State<EditMedication> {
   late String endDateString;
   late String contactsString;
 
-  EditMedicationState(this.medications, this.contacts, medication) {
+  EditMedicationState(this.medications, this.contacts, this.medication) {
     isNew = medication == null;
     if (isNew) {
-      data = Medication(-1);
+      data = Medication(0);
       registerBottle(medications).then((value) {
         print("======================Received bottle id: " + value.toString());
         data.id = value;
@@ -71,7 +72,7 @@ class EditMedicationState extends State<EditMedication> {
     } else {
       // Save original state of the medication. In case the user cancels the
       // changes, we can revert to this state.
-      data = medication.copy();
+      data = medication!.copy();
 
       timesString = "Times: ${data.times.map((time) {
         return "${time.hour}:${time.minute}${time.minute == 0 ? '0' : ''}";
@@ -80,7 +81,7 @@ class EditMedicationState extends State<EditMedication> {
       DateTime? start = data.startDate;
       startDateString = start == null
           ? "Start Date"
-          : "Start Date: ${start.day}/${start.month}/${start.year}";
+          : "Start Date: ${start.day}-${start.month}-${start.year}";
       DateTime? end = data.endDate;
       endDateString = end == null
           ? "End Date"
@@ -317,11 +318,13 @@ class EditMedicationState extends State<EditMedication> {
             ElevatedButton(
               child: const Text('Save'),
               onPressed: () {
-                if (data.id == -1) {
+                if (data.id != -1) {
                   if (data.isValid) {
                     if (isNew) {
                       // Add medication to list.
                       medications.add(data);
+                    } else {
+                      medication!.copyFrom(data);
                     }
                     // Save medication to file.
                     write(

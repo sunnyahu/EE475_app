@@ -12,6 +12,7 @@ part 'medication.g.dart';
 @JsonSerializable()
 class Medication {
   late int id;
+  late int seqNum;
   late String? name; // Name of the medication
   late int xDays; // Every X Number of days to take the medication
   late DateTime? startDate; // Start date of the medication
@@ -24,6 +25,7 @@ class Medication {
   late List<Contact> contacts; // Contacts to notify about the medication
 
   Medication(this.id) {
+    seqNum = 0;
     name = null;
     xDays = 1;
     startDate = null;
@@ -62,6 +64,8 @@ class Medication {
     switch (key) {
       case 'id':
         return id;
+      case 'seqNum':
+        return seqNum;
       case 'name':
         return name;
       case 'xDays':
@@ -91,6 +95,9 @@ class Medication {
     switch (key) {
       case 'id':
         id = value;
+        break;
+      case 'seqNum':
+        seqNum = value;
         break;
       case 'name':
         name = value;
@@ -127,6 +134,7 @@ class Medication {
 
   Medication copy() {
     Medication result = Medication(id);
+    result.seqNum = seqNum;
     result.name = name;
     result.xDays = xDays;
     result.startDate =
@@ -147,6 +155,7 @@ class Medication {
   void copyFrom(Medication other) {
     Medication medication = other.copy();
     id = medication.id;
+    seqNum = medication.seqNum;
     name = medication.name;
     xDays = medication.xDays;
     startDate = medication.startDate;
