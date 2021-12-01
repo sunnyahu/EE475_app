@@ -15,6 +15,12 @@ class Contact {
     phoneNumber = null;
   }
 
+  @override
+  bool operator ==(Object other) => other is Contact && id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
+
   String get id => "$name$phoneNumber";
 
   bool get isValid => name != null && phoneNumber != null;

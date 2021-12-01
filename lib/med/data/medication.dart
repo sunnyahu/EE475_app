@@ -36,6 +36,12 @@ class Medication {
     contacts = [];
   }
 
+  @override
+  bool operator ==(Object other) => other is Medication && id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
+
   bool get isValid => name != null && startDate != null && times.isNotEmpty;
 
   String get missing {

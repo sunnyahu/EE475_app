@@ -69,12 +69,7 @@ showAlertDialogYesNo(
         );
         // If contact was deleted, we delete them from every medication.
         for (Medication m in medications) {
-          for (Contact c in m.contacts) {
-            if (c.id == (object as Contact).id) {
-              m.contacts.remove(c);
-              break;
-            }
-          }
+          m.contacts.remove(object);
         }
       }
       // Close the dialog window.
