@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'dart:ui';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 
 enum PacketType { beacon, register, cap, none }
@@ -31,6 +32,11 @@ class PillPacket {
         type.toString() +
         "}";
   }
+
+  @override
+  bool operator ==(o) => o is PillPacket && id == o.id && seqNum == o.seqNum;
+  @override
+  int get hashCode => hashValues(id.hashCode, seqNum.hashCode);
 
   Map<String, dynamic> toJson() => {
         'id': id,
