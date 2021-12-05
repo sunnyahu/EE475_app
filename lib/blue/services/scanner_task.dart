@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:isolate';
 
 import 'package:flutter/material.dart';
 // import 'package:flutter_foreground_task/flutter_foreground_task.dart';
@@ -34,14 +33,14 @@ void startScanner() {
     service.setNotificationInfo(
         title: "PillPal Scanning Service",
         content: "Scanning for your PillPal Bottles");
-    final scan = fb.scanForDevices(withServices: []);
+    final scan =
+        fb.scanForDevices(withServices: [], scanMode: ScanMode.lowLatency);
     final sub = scan.listen(null);
     bool scanned = false;
     List<PillPacket> results = [];
     sub.onData((result) {
       scanned = true;
       if (PillPacket.isPillPalPacket(result)) {
-        // print(result);
         results.add(PillPacket(result));
       }
     });

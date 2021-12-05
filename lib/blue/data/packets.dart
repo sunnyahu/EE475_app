@@ -6,8 +6,6 @@ enum PacketType { beacon, register, cap, none }
 const int uuid = 0xFFFF;
 const String deviceName = "PPal";
 
-const int uuid_offset = 2;
-
 class PillPacket {
   late int id;
   late int seqNum;
@@ -52,8 +50,7 @@ class PillPacket {
   }
 
   static PacketType getType(DiscoveredDevice d) {
-    List<int>? data = d.manufacturerData.sublist(2);
-    switch (data[4]) {
+    switch (d.manufacturerData[8]) {
       case 0:
         return PacketType.beacon;
       case 1:
