@@ -1,6 +1,7 @@
 // Registers the Pill Bottle using Bluetooth.
 
-import 'package:flutter_blue/flutter_blue.dart';
+import 'dart:async';
+
 import 'package:pill_pal/blue/data/packets.dart';
 import 'package:pill_pal/med/data/medication.dart';
 
@@ -13,20 +14,20 @@ Future<int> registerBottle(List<Medication> meds) async {
   }
 
   int id = -1; // Get ID from Register Packet.
-  FlutterBlue flutterBlue = FlutterBlue.instance;
-  // Get the first PillPal type Register packetz
-  var scan = flutterBlue.scan(timeout: const Duration(seconds: 2));
-  var sub = scan.listen(null);
-  sub.onData((result) {
-    if (Packet.isPillPalPacket(result) &&
-        Packet.getType(result) == PacketType.register &&
-        !registeredIds.contains(Packet.getId(result))) {
-      id = Packet.getId(result);
-      // print("Registering bottle " + id.toString());
-      flutterBlue.stopScan();
-    }
-  });
+  // FlutterBlue flutterBlue = FlutterBlue.instance;
+  // // Get the first PillPal type Register packetz
+  // var scan = flutterBlue.scan(timeout: const Duration(seconds: 2));
+  // var sub = scan.listen(null);
+  // sub.onData((result) {
+  //   if (Packet.isPillPalPacket(result) &&
+  //       Packet.getType(result) == PacketType.register &&
+  //       !registeredIds.contains(Packet.getId(result))) {
+  //     id = Packet.getId(result);
+  //     // print("Registering bottle " + id.toString());
+  //     flutterBlue.stopScan();
+  //   }
+  // });
 
-  await sub.asFuture();
+  // await sub.asFuture();
   return id;
 }

@@ -4,6 +4,8 @@
 /// all the medications the user has entered.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:pill_pal/blue/services/scanner_task.dart';
 
 import '../../med/data/medication.dart';
 import '../../med/views/list_medications.dart';
@@ -11,7 +13,10 @@ import '../../contact/data/contact.dart';
 import '../../contact/views/list_contacts.dart';
 import '../../db/database.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  FlutterBackgroundService.initialize(startScanner);
+
   runApp(const MaterialApp(
     home: PillPal(),
   ));
@@ -30,6 +35,7 @@ class PillPalState extends State<PillPal> {
   List<Medication> medications = [];
   // List of Contacts.
   List<Contact> contacts = [];
+  String text = "Stop Scanning Service";
 
   @override
   void initState() {
@@ -97,6 +103,26 @@ class PillPalState extends State<PillPal> {
                       ),
                     ),
                   );
+                },
+              ),
+              ElevatedButton(
+                child: Text(text),
+                onPressed: () async {
+                  var isRunning =
+                      await FlutterBackgroundService().isServiceRunning();
+                  if (isRunning) {
+                    FlutterBackgroundService().sendData(
+                      {"action": "stopService"},
+                    );
+                  } else {
+                    FlutterBackgroundService.initialize(startScanner);
+                  }
+                  if (!isRunning) {
+                    text = 'Stop Scanning Service';
+                  } else {
+                    text = 'Start Scanning Service';
+                  }
+                  setState(() {});
                 },
               ),
             ],
