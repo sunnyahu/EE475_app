@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
-// import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:pill_pal/blue/data/packets.dart';
@@ -36,19 +35,18 @@ void startScanner() {
         content: "Scanning for your PillPal Bottles");
     final scan = fb.scanForDevices(withServices: []);
     final sub = scan.listen(null);
-    bool scanned = false;
+    // bool scanned = false;
     HashSet<PillPacket> results = HashSet();
     sub.onData((result) {
-      scanned = true;
+      // scanned = true;
       if (PillPacket.isPillPalPacket(result)) {
-        // print(result);
         results.add(PillPacket(result));
       }
     });
     sub.onDone(() {
-      print(results);
-      print(scanned);
-      service.sendData({"devices": List.of(results)});
+      // print(results);
+      // print(scanned);
+      service.sendData({"packets": List.of(results)});
     });
     sub.onError((error) {
       print(error);

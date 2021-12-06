@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:pill_pal/blue/data/packets.dart';
 import 'package:pill_pal/med/data/medication.dart';
 
@@ -14,20 +15,19 @@ Future<int> registerBottle(List<Medication> meds) async {
   }
 
   int id = -1; // Get ID from Register Packet.
-  // FlutterBlue flutterBlue = FlutterBlue.instance;
-  // // Get the first PillPal type Register packetz
-  // var scan = flutterBlue.scan(timeout: const Duration(seconds: 2));
-  // var sub = scan.listen(null);
-  // sub.onData((result) {
-  //   if (Packet.isPillPalPacket(result) &&
-  //       Packet.getType(result) == PacketType.register &&
-  //       !registeredIds.contains(Packet.getId(result))) {
-  //     id = Packet.getId(result);
-  //     // print("Registering bottle " + id.toString());
-  //     flutterBlue.stopScan();
-  //   }
-  // });
+  var stream = FlutterBackgroundService().onDataReceived;
 
-  // await sub.asFuture();
+  var snapshot = await stream.firstWhere((snap) {
+    var packets = snap!['packets'];
+    for (var packet in packets) {
+      PillPacket p = PillPacket.fromJson(packet);
+      if (!registeredIds.contains(p.id) && p.type == PacketType.register) {
+        id = p.id;
+        return true;
+      }
+    }
+    return false;
+  });
+
   return id;
 }

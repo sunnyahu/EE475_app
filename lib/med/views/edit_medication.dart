@@ -63,7 +63,6 @@ class EditMedicationState extends State<EditMedication> {
         print("======================Received bottle id: " + value.toString());
         data.id = value;
       });
-      print("after registerbottle");
 
       timesString = "Times";
       startDateString = "Start Date";

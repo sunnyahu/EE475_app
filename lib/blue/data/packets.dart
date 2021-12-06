@@ -20,6 +20,13 @@ class PillPacket {
     type = getType(d);
   }
 
+  PillPacket.dummy() {
+    id = -1;
+    seqNum = -1;
+    timestamp = DateTime(2069, DateTime.april, 20);
+    type = PacketType.none;
+  }
+
   @override
   String toString() {
     return "{timestamp: " +
