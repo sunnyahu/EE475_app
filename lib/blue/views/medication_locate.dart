@@ -3,12 +3,14 @@
 /// This file stores "Locate Medication" page which
 /// stores the bluetooth scan results.
 
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:pill_pal/blue/data/packets.dart';
 import 'package:pill_pal/med/data/medication.dart';
-
-// import 'package:flutter_speedometer/flutter_speedometer.dart';
+import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 @immutable
 class LocateMedication extends StatefulWidget {
@@ -24,73 +26,74 @@ class LocateMedication extends StatefulWidget {
 }
 
 class LocateMedicationState extends State<LocateMedication> {
-  // FlutterBlue flutterBlue = FlutterBlue.instance;
-  // List<ScanResult> devices = [];
-  List<int> devices = []; // TODO
+  static const double MIN_RSSI = -150;
+  static const double MAX_RSSI = 0;
+  static const double SEG_THIRD = 50;
+  int RSSI = -75; // RSSI Value updating the Speedometer.
 
-  int MIN_RSSI = 0;
-  int MAX_RSSI = 1000;
-  int RSSI = 0; // RSSI Value updating the Speedometer.
+  late StreamSubscription<dynamic> subscriber;
+  bool firstBuild = true;
 
   @override
   Widget build(BuildContext context) {
+    if (firstBuild) {
+      firstBuild = false;
+      print("Searching for : " + widget.medication.id.toString());
+      var stream = FlutterBackgroundService().onDataReceived;
+      subscriber = stream.listen((snapshot) {
+        var packets = snapshot!['packets'];
+        for (var packet in packets) {
+          PillPacket p = PillPacket.fromJson(packet);
+          if (p.type == PacketType.beacon && p.id == widget.medication.id) {
+            print("Found with " + p.rssi.toString());
+            RSSI = p.rssi;
+            setState(() {});
+          }
+        }
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Locate Medication'),
       ),
       body: Column(
         children: <Widget>[
-          ListTile(
-            title: const Text('Start Looking'),
-            trailing: const Icon(Icons.search),
-            onTap: () {
-              // Start scanning
-              devices.clear();
-              setState(() {});
-              print("Searching for : " + widget.medication.id.toString());
-              // var scan = flutterBlue.startScan();
-              // flutterBlue.scanResults.listen((results) {
-              //   if (results.isNotEmpty) {
-              //     for (ScanResult result in results) {
-              //       if (Packet.isPillPalPacket(result) &&
-              //           Packet.getType(result) == PacketType.beacon &&
-              //           Packet.getId(result) == widget.medication.id) {
-              //         devices.clear();
-              //         devices.add(result);
-              //         setState(() {
-              //           RSSI = result.rssi;
-              //         });
-              //       }
-              //     }
-              //   }
-              // });
-
-              // Stop scanning
-              // flutterBlue.stopScan();
-            },
+          SfRadialGauge(
+            axes: [
+              RadialAxis(
+                minimum: MIN_RSSI,
+                maximum: MAX_RSSI,
+                ranges: [
+                  GaugeRange(
+                      startValue: MIN_RSSI,
+                      endValue: MIN_RSSI + SEG_THIRD,
+                      color: Colors.red,
+                      label: "Far"),
+                  GaugeRange(
+                      startValue: MIN_RSSI + SEG_THIRD,
+                      endValue: MAX_RSSI - SEG_THIRD,
+                      color: Colors.yellow,
+                      label: "Close"),
+                  GaugeRange(
+                      startValue: MAX_RSSI - SEG_THIRD,
+                      endValue: MAX_RSSI,
+                      color: Colors.green,
+                      label: "Very Close")
+                ],
+                pointers: [NeedlePointer(value: RSSI.toDouble())],
+              )
+            ],
           ),
-          // Expanded(
-          //   child: ListView.builder(
-          //     itemCount: devices.length,
-          //     itemBuilder: (BuildContext context, int index) {
-          //       ScanResult device = devices[index];
-          //       return ListTile(
-          //         title: Text('${device.device.name} - RSSI: ${device.rssi}'),
-          //         subtitle: Text(device.device.id.toString()),
-          //         trailing: const Icon(Icons.medical_services),
-          //       );
-          //     },
-          //   ),
-          // ),
-          // Speedometer(
-          //   size: 250,
-          //   minValue: MIN_RSSI,
-          //   maxValue: MAX_RSSI,
-          //   currentValue: RSSI,
-          //   displayText: '${widget.medication.name} Proximity',
-          // ),
         ],
       ),
     );
+  }
+
+  @override
+  @mustCallSuper
+  void dispose() {
+    subscriber.cancel();
+    super.dispose();
   }
 }

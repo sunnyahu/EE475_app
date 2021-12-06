@@ -17,7 +17,7 @@ Future<int> registerBottle(List<Medication> meds) async {
   int id = -1; // Get ID from Register Packet.
   var stream = FlutterBackgroundService().onDataReceived;
 
-  var snapshot = await stream.firstWhere((snap) {
+  await stream.firstWhere((snap) {
     var packets = snap!['packets'];
     for (var packet in packets) {
       PillPacket p = PillPacket.fromJson(packet);

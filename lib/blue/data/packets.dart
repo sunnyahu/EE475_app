@@ -62,7 +62,7 @@ class PillPacket {
       : id = json['id'],
         seqNum = json['seqNum'],
         type = PacketType.values[json['type']],
-        timestamp = DateTime.parse(json['timestamp'])
+        timestamp = DateTime.parse(json['timestamp']),
         rssi = json['rssi'];
 
   static bool isPillPalPacket(DiscoveredDevice device) {

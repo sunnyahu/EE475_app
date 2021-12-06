@@ -45,6 +45,7 @@ dependencies:
   flutter_isolate: ^2.0.0
   flutter_bloc: ^8.0.0
   flutter_reactive_ble: ^5.0.2
+  syncfusion_flutter_gauges: ^19.3.56
 
 dev_dependencies:
   flutter_test:
