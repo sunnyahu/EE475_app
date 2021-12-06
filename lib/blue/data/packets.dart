@@ -12,12 +12,14 @@ class PillPacket {
   late int seqNum;
   late DateTime timestamp;
   late PacketType type;
+  late int rssi;
 
   PillPacket(DiscoveredDevice d) {
     id = getBottleId(d);
     seqNum = getSeqNum(d);
     timestamp = DateTime.now();
     type = getType(d);
+    rssi = d.rssi;
   }
 
   PillPacket.dummy() {
@@ -25,12 +27,15 @@ class PillPacket {
     seqNum = -1;
     timestamp = DateTime(2069, DateTime.april, 20);
     type = PacketType.none;
+    rssi = 0;
   }
 
   @override
   String toString() {
     return "{timestamp: " +
         timestamp.toString() +
+        ", rssi: " +
+        rssi.toString() +
         ", id: " +
         id.toString() +
         ", seqNum: " +
@@ -49,14 +54,16 @@ class PillPacket {
         'id': id,
         'seqNum': seqNum,
         'type': type.index,
-        'timestamp': timestamp.toString()
+        'timestamp': timestamp.toString(),
+        'rssi': rssi,
       };
 
   PillPacket.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         seqNum = json['seqNum'],
         type = PacketType.values[json['type']],
-        timestamp = DateTime.parse(json['timestamp']);
+        timestamp = DateTime.parse(json['timestamp'])
+        rssi = json['rssi'];
 
   static bool isPillPalPacket(DiscoveredDevice device) {
     return device.name == deviceName;
