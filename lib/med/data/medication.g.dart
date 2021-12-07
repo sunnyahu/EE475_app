@@ -22,9 +22,7 @@ Medication _$MedicationFromJson(Map<String, dynamic> json) => Medication(
           .map((e) => DateTime.parse(e as String))
           .toList()
       ..dosage = json['dosage'] as int
-      ..dosageHistory = (json['dosageHistory'] as List<dynamic>)
-          .map((e) => DateTime.parse(e as String))
-          .toList()
+      ..nPills = json['nPills'] as int
       ..leftBehind = json['leftBehind'] as bool
       ..push = json['push'] as bool
       ..contacts = (json['contacts'] as List<dynamic>)
@@ -41,8 +39,7 @@ Map<String, dynamic> _$MedicationToJson(Medication instance) =>
       'endDate': instance.endDate?.toIso8601String(),
       'times': instance.times.map((e) => e.toIso8601String()).toList(),
       'dosage': instance.dosage,
-      'dosageHistory':
-          instance.dosageHistory.map((e) => e.toIso8601String()).toList(),
+      'nPills': instance.nPills,
       'leftBehind': instance.leftBehind,
       'push': instance.push,
       'contacts': instance.contacts,

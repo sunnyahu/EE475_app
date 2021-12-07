@@ -53,6 +53,11 @@ class PillPalState extends State<PillPal> {
               .toList();
         }
       });
+      List<int> mIds = [];
+      for (var m in medications) {
+        mIds.add(m.id);
+      }
+      FlutterBackgroundService().sendData({"ids": mIds});
     });
     // Load contacts from json file.
     read(CONTACTS_DB).then((json) {

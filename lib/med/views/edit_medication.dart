@@ -7,6 +7,7 @@
 ///
 
 import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:pill_pal/contact/views/select_contacts.dart';
 import 'package:pill_pal/widgets/calendar.dart';
 
@@ -118,7 +119,7 @@ class EditMedicationState extends State<EditMedication> {
               // text input for name
               controller: nameController,
               decoration: const InputDecoration(labelText: "Name"),
-              onChanged: (value) {
+              onSubmitted: (value) {
                 data.name = value;
                 setState(() {});
               },
@@ -129,7 +130,7 @@ class EditMedicationState extends State<EditMedication> {
                 decoration:
                     const InputDecoration(labelText: "Total Number of Pills"),
                 keyboardType: TextInputType.number,
-                onChanged: (value) {
+                onSubmitted: (value) {
                   data.nPills = num.tryParse(value)!.toInt();
                   setState(() {});
                 }),
@@ -138,7 +139,7 @@ class EditMedicationState extends State<EditMedication> {
                 controller: doseController,
                 decoration: const InputDecoration(labelText: "Dosage Amount"),
                 keyboardType: TextInputType.number,
-                onChanged: (value) {
+                onSubmitted: (value) {
                   data.dosage = num.tryParse(value)!.toInt();
                   setState(() {});
                 }),
@@ -333,6 +334,10 @@ class EditMedicationState extends State<EditMedication> {
                     if (isNew) {
                       // Add medication to list.
                       medications.add(data);
+                      // add a record for a brand new log
+                      FlutterBackgroundService().sendData({
+                        "ids": [data.id]
+                      });
                     } else {
                       medication!.copyFrom(data);
                     }

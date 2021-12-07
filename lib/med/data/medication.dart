@@ -20,7 +20,6 @@ class Medication {
   late List<DateTime> times; // Times of day to take the medication
   late int nPills;
   late int dosage; // Dosage of the medication
-  late List<DateTime> dosageHistory; // History of the dosage of the medication
   late bool leftBehind; // Notify the user if the medication is left behind
   late bool push; // Send push notifications related to the medication
   late List<Contact> contacts; // Contacts to notify about the medication
@@ -34,7 +33,6 @@ class Medication {
     times = [];
     nPills = 0;
     dosage = 0;
-    dosageHistory = [];
     leftBehind = false;
     push = false;
     contacts = [];
@@ -80,8 +78,6 @@ class Medication {
         return times;
       case 'dosage':
         return dosage;
-      case 'dosageHistory':
-        return dosageHistory;
       case 'leftBehind':
         return leftBehind;
       case 'push':
@@ -119,9 +115,6 @@ class Medication {
       case 'dosage':
         dosage = value;
         break;
-      case 'dosageHistory':
-        dosageHistory = value;
-        break;
       case 'leftBehind':
         leftBehind = value;
         break;
@@ -146,8 +139,6 @@ class Medication {
 
     result.times.addAll(times.map((e) => DateTime.parse(e.toIso8601String())));
     result.dosage = dosage;
-    result.dosageHistory
-        .addAll(dosageHistory.map((e) => DateTime.parse(e.toIso8601String())));
     result.leftBehind = leftBehind;
     result.push = push;
     result.contacts.addAll(contacts.map((e) => e.copy()));
@@ -164,7 +155,7 @@ class Medication {
     endDate = medication.endDate;
     times = medication.times;
     dosage = medication.dosage;
-    dosageHistory = medication.dosageHistory;
+    nPills = medication.nPills;
     leftBehind = medication.leftBehind;
     push = medication.push;
     contacts = medication.contacts;

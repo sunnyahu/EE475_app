@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:path_provider/path_provider.dart';
 
 const String MEDICATIONS_DB = "medications_db.json";
+const String LOGS_DB = "logs_db.json";
 const String CONTACTS_DB = "contacts_db.json";
 
 // Read json data from the given filename.

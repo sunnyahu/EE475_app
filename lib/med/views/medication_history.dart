@@ -23,18 +23,18 @@ class MedicationHistory extends StatelessWidget {
       ),
       body: Column(
         children: <Widget>[
-          Expanded(
-            child: ListView.builder(
-                itemCount: medication.dosageHistory.length,
-                itemBuilder: (BuildContext context, int index) {
-                  var history = medication.dosageHistory[index];
-                  return ListTile(
-                    title: Text(
-                      '${history.day}/${history.month}/${history.year}',
-                    ),
-                  );
-                }),
-          ),
+          // Expanded(
+          //   child: ListView.builder(
+          //       itemCount: medication.dosageHistory.length,
+          //       itemBuilder: (BuildContext context, int index) {
+          //         var history = medication.dosageHistory[index];
+          //         return ListTile(
+          //           title: Text(
+          //             '${history.day}/${history.month}/${history.year}',
+          //           ),
+          //         );
+          //       }),
+          // ),
         ],
       ),
     );
