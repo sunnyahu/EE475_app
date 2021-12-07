@@ -22,10 +22,6 @@ void initNotifications() {
             channelDescription: 'Notification channel for basic tests',
             defaultColor: const Color(0xFF9D50DD),
             ledColor: Colors.white),
-        NotificationChannel(
-            channelKey: 'button_key',
-            channelName: 'button_confirm_channel',
-            channelDescription: 'channel for confirmations')
       ],
       debug: true);
 
@@ -42,7 +38,6 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
   var sub = stream.listen((packets) {
     for (var p in packets) {
       if (p.type == PacketType.cap || p.type == PacketType.beacon) {
-        print("notifying");
         AwesomeNotifications().createNotification(
             content: NotificationContent(
                 id: 10,
@@ -75,6 +70,6 @@ void handleNotifTaps() {
   });
 }
 
-// Background task which loops over db to see
+// Background task which queries db to see
 // if there should be any notification events happening
 void reminderTask() {}

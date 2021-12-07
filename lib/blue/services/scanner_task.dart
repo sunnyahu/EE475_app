@@ -31,17 +31,14 @@ void startScanner() {
     final scan =
         fb.scanForDevices(withServices: [], scanMode: ScanMode.lowPower);
     final sub = scan.listen(null);
-    // bool scanned = false;
     HashSet<PillPacket> results = HashSet();
     sub.onData((result) {
-      // scanned = true;
       if (PillPacket.isPillPalPacket(result)) {
         results.add(PillPacket(result));
       }
     });
     sub.onDone(() {
       print(results);
-      // print(scanned);
       service.sendData({"packets": List.of(results)});
       controller.add(results);
     });
