@@ -49,5 +49,4 @@ void startScanner() {
   });
 
   packetHandlerTask(controller.stream);
-  reminderTask();
 }

@@ -341,6 +341,7 @@ class EditMedicationState extends State<EditMedication> {
                     } else {
                       medication!.copyFrom(data);
                     }
+                    FlutterBackgroundService().sendData({'updated_med': data});
                     // Save medication to file.
                     write(
                       MEDICATIONS_DB,

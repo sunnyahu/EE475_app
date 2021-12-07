@@ -71,6 +71,20 @@ class PillPalState extends State<PillPal> {
         }
       });
     });
+
+    // set up a listener for backend changes
+    FlutterBackgroundService().onDataReceived.listen((snapshot) {
+      if (snapshot!.containsKey('updated_med_state')) {
+        Medication m = Medication.fromJson(snapshot['updated_med_state']);
+        for (int i = 0; i < medications.length; i++) {
+          if (medications[i].id == m.id) {
+            medications[i].seqNum = m.seqNum;
+            medications[i].nPills = m.nPills;
+            break;
+          }
+        }
+      }
+    });
   }
 
   @override

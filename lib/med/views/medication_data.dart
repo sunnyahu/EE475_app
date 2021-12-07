@@ -8,6 +8,7 @@
 /// - Delete Medication Button
 
 import 'package:flutter/material.dart';
+import 'package:pill_pal/db/database.dart';
 
 import '../../med/data/medication.dart';
 import '../../med/views/edit_medication.dart';
@@ -68,14 +69,22 @@ class MedicationDataState extends State<MedicationData> {
             title: const Text('View History'),
             trailing: const Icon(Icons.history),
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => MedicationHistory(
-                    medication: medication,
+              read(medication.id.toString()).then((json) {
+                List<DateTime> history = [];
+                var data = json['data'];
+                for (var d in data) {
+                  history.add(DateTime.parse(d));
+                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MedicationHistory(
+                      name: medication.name!,
+                      data: history,
+                    ),
                   ),
-                ),
-              );
+                );
+              });
             },
           ),
           const Divider(),
