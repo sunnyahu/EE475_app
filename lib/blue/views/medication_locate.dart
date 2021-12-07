@@ -5,7 +5,6 @@
 
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:pill_pal/blue/data/packets.dart';
@@ -31,6 +30,7 @@ class LocateMedicationState extends State<LocateMedication> {
   static const double SEG_THIRD = 50;
   int RSSI = -75; // RSSI Value updating the Speedometer.
 
+  final stream = FlutterBackgroundService().onDataReceived;
   late StreamSubscription<dynamic> subscriber;
   bool firstBuild = true;
 
@@ -39,7 +39,6 @@ class LocateMedicationState extends State<LocateMedication> {
     if (firstBuild) {
       firstBuild = false;
       print("Searching for : " + widget.medication.id.toString());
-      var stream = FlutterBackgroundService().onDataReceived;
       subscriber = stream.listen((snapshot) {
         var packets = snapshot!['packets'];
         for (var packet in packets) {

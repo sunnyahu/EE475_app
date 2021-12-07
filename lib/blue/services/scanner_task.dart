@@ -5,20 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:pill_pal/blue/data/packets.dart';
+import 'package:pill_pal/notifications/services/notifs.dart';
 
 void startScanner() {
   WidgetsFlutterBinding.ensureInitialized();
   final service = FlutterBackgroundService();
 
   service.onDataReceived.listen((event) {
-    if (event!["action"] == "setAsForeground") {
-      service.setForegroundMode(true);
-      return;
-    }
-    if (event["action"] == "setAsBackground") {
-      service.setForegroundMode(false);
-    }
-    if (event["action"] == "stopService") {
+    if (event!["action"] == "stopService") {
       service.stopBackgroundService();
     }
   });
@@ -26,6 +20,7 @@ void startScanner() {
   // bring service to foreground
   service.setForegroundMode(true);
   final fb = FlutterReactiveBle();
+  var controller = StreamController<Set<PillPacket>>();
 
   // start broadcasting
   Timer.periodic(const Duration(seconds: 8), (timer) async {
@@ -33,7 +28,8 @@ void startScanner() {
     service.setNotificationInfo(
         title: "PillPal Scanning Service",
         content: "Scanning for your PillPal Bottles");
-    final scan = fb.scanForDevices(withServices: []);
+    final scan =
+        fb.scanForDevices(withServices: [], scanMode: ScanMode.lowPower);
     final sub = scan.listen(null);
     // bool scanned = false;
     HashSet<PillPacket> results = HashSet();
@@ -44,56 +40,17 @@ void startScanner() {
       }
     });
     sub.onDone(() {
-      // print(results);
+      print(results);
       // print(scanned);
       service.sendData({"packets": List.of(results)});
+      controller.add(results);
     });
     sub.onError((error) {
       print(error);
       timer.cancel();
     });
   });
+
+  packetHandlerTask(controller.stream);
+  reminderTask();
 }
-
-
-// class ScanTask extends TaskHandler {
-//   @override
-//   Future<void> onStart(DateTime timestamp, SendPort? sendPort) async {
-//     WidgetsFlutterBinding.ensureInitialized();
-//     // final service = FlutterBackgroundService();
-//     final fb = FlutterReactiveBle();
-
-//     // start broadcasting
-//     Timer.periodic(const Duration(seconds: 8), (timer) async {
-//       FlutterForegroundTask.updateService(
-//           notificationTitle: "PillPal",
-//           notificationText: "Scanning for your devices");
-//       final scan = fb.scanForDevices(withServices: []);
-//       final sub = scan.listen(null);
-//       bool scanned = false;
-//       List<PillPacket> results = [];
-//       sub.onData((result) {
-//         scanned = true;
-//         if (PillPacket.isPillPalPacket(result)) {
-//           // print(result);
-//           results.add(PillPacket(result));
-//         }
-//       });
-//       sub.onDone(() {
-//         print(results);
-//         print(scanned);
-//         // sendPort?.send(results);
-//       });
-//       sub.onError((error) {
-//         print(error);
-//         timer.cancel();
-//       });
-//     });
-//   }
-
-//   @override
-//   Future<void> onDestroy(DateTime timestamp) async {}
-
-//   @override
-//   Future<void> onEvent(DateTime timestamp, SendPort? sendPort) async {}
-// }
