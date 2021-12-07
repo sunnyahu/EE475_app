@@ -18,6 +18,7 @@ class Medication {
   late DateTime? startDate; // Start date of the medication
   late DateTime? endDate; // End date of the medication
   late List<DateTime> times; // Times of day to take the medication
+  late int nPills;
   late int dosage; // Dosage of the medication
   late List<DateTime> dosageHistory; // History of the dosage of the medication
   late bool leftBehind; // Notify the user if the medication is left behind
@@ -31,7 +32,8 @@ class Medication {
     startDate = null;
     endDate = null;
     times = [];
-    dosage = 1;
+    nPills = 0;
+    dosage = 0;
     dosageHistory = [];
     leftBehind = false;
     push = false;

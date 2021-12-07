@@ -49,6 +49,10 @@ class EditMedicationState extends State<EditMedication> {
   // Intermediate Medication Object to store the user's input/changes.
   late Medication data;
 
+  final nameController = TextEditingController();
+  final doseController = TextEditingController();
+  final cntController = TextEditingController();
+
   // Used to display current information entered by the user.
   late String timesString;
   late String startDateString;
@@ -68,6 +72,9 @@ class EditMedicationState extends State<EditMedication> {
       startDateString = "Start Date";
       endDateString = "End Date";
       contactsString = "Select Contacts";
+      nameController.text = "New Medication";
+      cntController.text = "0";
+      doseController.text = "1";
     } else {
       // Save original state of the medication. In case the user cancels the
       // changes, we can revert to this state.
@@ -87,6 +94,9 @@ class EditMedicationState extends State<EditMedication> {
           : "End Date: ${end.month}-${end.day}-${end.year}";
       contactsString =
           "Select Contacts: ${data.contacts.map((contact) => contact.name).join(', ')}";
+      nameController.text = medication!.name!;
+      cntController.text = medication!.nPills.toString();
+      doseController.text = medication!.dosage.toString();
     }
   }
 
@@ -104,34 +114,31 @@ class EditMedicationState extends State<EditMedication> {
         ),
         body: ListView(
           children: <Widget>[
-            Input(
-              text:
-                  '${!isNew ? "Update " : ""}Prescription/Medication Name', // Textfield label.
-              object: data, // Medication object to modify.
-              dataKey: 'name', // Field name in Medication object to modify.
-              isPhone: false, // Does the field use a phone keyboard?
-              formKey: medicationName, // Form key.
-            ),
-            ListTile(
-              title: Text("Dosage: ${data.dosage}"),
-              leading: const Icon(Icons.medication),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => NumberSelect(
-                      medication: data, // Medication object to modify.
-                      count: 10, // Number of choices, goes from 1-10.
-                      keyName: 'dosage', // Field name in Medication to modify.
-                      text: 'Dosage', // Page Title Name.
-                    ),
-                  ),
-                ).then((value) {
-                  // Reload Page.
-                  setState(() {});
-                });
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(labelText: "Name"),
+              onChanged: (value) {
+                data.name = value;
+                setState(() {});
               },
             ),
+            TextField(
+                controller: cntController,
+                decoration:
+                    const InputDecoration(labelText: "Total Number of Pills"),
+                keyboardType: TextInputType.number,
+                onChanged: (value) {
+                  data.nPills = num.tryParse(value)!.toInt();
+                  setState(() {});
+                }),
+            TextField(
+                controller: doseController,
+                decoration: const InputDecoration(labelText: "Dosage Amount"),
+                keyboardType: TextInputType.number,
+                onChanged: (value) {
+                  data.dosage = num.tryParse(value)!.toInt();
+                  setState(() {});
+                }),
             ListTile(
               title: Text(timesString),
               trailing: IconButton(
