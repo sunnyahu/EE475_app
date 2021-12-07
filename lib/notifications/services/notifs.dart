@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:pill_pal/blue/data/packets.dart';
 import 'package:pill_pal/db/database.dart';

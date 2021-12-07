@@ -54,7 +54,7 @@ class PillPacket {
         'id': id,
         'seqNum': seqNum,
         'type': type.index,
-        'timestamp': timestamp.toString(),
+        'timestamp': timestamp.toIso8601String(),
         'rssi': rssi,
       };
 
