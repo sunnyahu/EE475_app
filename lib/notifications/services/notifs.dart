@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'dart:collection';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:pill_pal/blue/data/packets.dart';
+import 'package:pill_pal/db/database.dart';
+import 'package:pill_pal/med/data/medication.dart';
 
 void initNotifications() {
   AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
@@ -17,11 +20,18 @@ void initNotifications() {
       null,
       [
         NotificationChannel(
-            channelKey: 'basic_channel',
-            channelName: 'Basic notifications',
-            channelDescription: 'Notification channel for basic tests',
-            defaultColor: const Color(0xFF9D50DD),
-            ledColor: Colors.white),
+            channelKey: 'reminder_channel',
+            channelName: 'Reminder Notifications',
+            channelDescription: 'Notification channel for basic tests'),
+        NotificationChannel(
+            channelKey: 'leave_channel',
+            channelName: 'Left behind channel',
+            channelDescription: 'channel for left behind notifications'),
+        NotificationChannel(
+            channelKey: 'action_channel',
+            channelName: 'Action Notifications',
+            channelDescription:
+                'Channel for when user is supposed to push button')
       ],
       debug: true);
 
@@ -72,4 +82,36 @@ void handleNotifTaps() {
 
 // Background task which queries db to see
 // if there should be any notification events happening
-void reminderTask() {}
+void reminderTask() {
+  //TODO: change duration to every 1-5 minutes
+  const Duration d = Duration(seconds: 15);
+  Timer.periodic(d, (timer) {
+    // get all the medications from the database
+    List<Medication> meds = [];
+    read(MEDICATIONS_DB).then((json) {
+      if (json.isNotEmpty) {
+        meds = json['medications']
+            .map<Medication>((m) => Medication.fromJson(m))
+            .toList();
+      }
+    });
+
+    // iterate over all our medications to see what's up
+    // this is the worst way to do this lmfao
+    DateTime now = DateTime.now();
+    DateTime compareTime = DateTime(1, 1, 1, now.hour, now.minute, now.second);
+    for (Medication med in meds) {
+      for (DateTime t in med.times) {
+        if (t.difference(compareTime).abs() < d) {
+          String body = 'Reminder to take ${med.name} at ${t.hour}:${t.minute}';
+          AwesomeNotifications().createNotification(
+              content: NotificationContent(
+                  id: 69,
+                  channelKey: 'basic_channel',
+                  title: 'PillPal Reminder',
+                  body: body));
+        }
+      }
+    }
+  });
+}

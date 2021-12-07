@@ -115,6 +115,7 @@ class EditMedicationState extends State<EditMedication> {
         body: ListView(
           children: <Widget>[
             TextField(
+              // text input for name
               controller: nameController,
               decoration: const InputDecoration(labelText: "Name"),
               onChanged: (value) {
@@ -123,6 +124,7 @@ class EditMedicationState extends State<EditMedication> {
               },
             ),
             TextField(
+                // input for total number of pills
                 controller: cntController,
                 decoration:
                     const InputDecoration(labelText: "Total Number of Pills"),
@@ -132,6 +134,7 @@ class EditMedicationState extends State<EditMedication> {
                   setState(() {});
                 }),
             TextField(
+                // input for dosage amount (number of pills per bottle open)
                 controller: doseController,
                 decoration: const InputDecoration(labelText: "Dosage Amount"),
                 keyboardType: TextInputType.number,
@@ -140,6 +143,7 @@ class EditMedicationState extends State<EditMedication> {
                   setState(() {});
                 }),
             ListTile(
+              // list of times of the day to take the medicine
               title: Text(timesString),
               trailing: IconButton(
                 icon: const Icon(Icons.close),
