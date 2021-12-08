@@ -25,10 +25,10 @@ class LocateMedication extends StatefulWidget {
 }
 
 class LocateMedicationState extends State<LocateMedication> {
-  static const double MIN_RSSI = -150;
-  static const double MAX_RSSI = 0;
-  static const double SEG_THIRD = 50;
-  int RSSI = -75; // RSSI Value updating the Speedometer.
+  static const double MIN_RSSI = -100;
+  static const double MAX_RSSI = -20;
+  static const double SEG_THIRD = 26;
+  int RSSI = -100; // RSSI Value updating the Speedometer.
 
   final stream = FlutterBackgroundService().onDataReceived;
   late StreamSubscription<dynamic> subscriber;

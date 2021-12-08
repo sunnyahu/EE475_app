@@ -122,7 +122,7 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
     for (Medication m in medList) {
       meds[m.id] = m;
       medLastSeen[m.id] = DateTime.now();
-      medNextExpect[m.id] = findNextExpectedTime(m.times);
+      medNextExpect[m.id] = findNextExpectedTime(m.times, null);
     }
   }
 
@@ -138,7 +138,7 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
         meds[m.id]!.nPills = m.nPills;
         meds[m.id]!.contacts = m.contacts;
         meds[m.id]!.times = m.times;
-        medNextExpect[m.id] = findNextExpectedTime(m.times);
+        medNextExpect[m.id] = findNextExpectedTime(m.times, null);
       } else {
         meds[m.id] = m;
       }
@@ -149,17 +149,17 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
   // Reminder Service
   // ==============================
   const Duration d = Duration(seconds: 15);
-  const Duration d1 = Duration(minutes: 1);
+  const Duration d1 = Duration(seconds: 40);
 
   // Time-based medication reminder
   // const Duration d1 = Duration(hours: );
   Timer.periodic(d, (timer) async {
     DateTime now = DateTime.now();
     for (int id in meds.keys) {
-      print(id.toString());
-      print(medNextExpect[id]!);
+      // print(id.toString());
+      // print(medNextExpect[id]!);
       // send a notification if the user is late on dosage
-      if (now.difference(medNextExpect[id]!) > const Duration(seconds: 10)) {
+      if (now.difference(medNextExpect[id]!) > const Duration(seconds: 20)) {
         String dispMinute = medNextExpect[id]!.minute < 10
             ? "0" + medNextExpect[id]!.minute.toString()
             : medNextExpect[id]!.minute.toString();
@@ -178,14 +178,14 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
                   channelKey: 'reminder_channel',
                   title: 'PillPal Reminder',
                   body:
-                      "Sending a text to ${c.name} to remind you to take ${meds[id]!.name}",
+                      "Texting to ${c.name} to remind you to take ${meds[id]!.name}",
                   notificationLayout: NotificationLayout.BigText));
         }
       }
       // send a notification for an upcoming dosage
       for (DateTime t in meds[id]!.times) {
         if (t.difference(
-                DateTime(t.year, t.month, t.day, now.hour, now.minute)) <
+                DateTime(t.year, t.month, t.day, now.hour, now.minute)) >
             d1) {
           if (meds[id]!.push) {
             String displayMinute =
@@ -252,7 +252,8 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
         if (nDoses > 0) {
           m.nPills -= nDoses * m.dosage;
           m.seqNum = p.seqNum;
-          medNextExpect[m.id] = findNextExpectedTime(m.times);
+          medNextExpect[m.id] =
+              findNextExpectedTime(m.times, medNextExpect[m.id]);
           // consider adding in a "you took your meds too early lol" here
           if (m.nPills < 10) {
             // notify user that they probalby have
@@ -278,7 +279,7 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
 }
 
 // Helper function to identify the next expected time
-DateTime findNextExpectedTime(List<DateTime> times) {
+DateTime findNextExpectedTime(List<DateTime> times, DateTime? currTime) {
   DateTime now = DateTime.now();
   List<DateTime> adjustedTime = [];
   for (DateTime t in times) {
@@ -289,7 +290,7 @@ DateTime findNextExpectedTime(List<DateTime> times) {
   bool changed = false;
   for (int i = 0; i < adjustedTime.length; i++) {
     DateTime t = adjustedTime[i];
-    if (t.isAfter(now.subtract(const Duration(minutes: 3)))) {
+    if ((currTime != null && currTime != t) && t.isAfter(now)) {
       ret = adjustedTime[i];
       changed = true;
       break;

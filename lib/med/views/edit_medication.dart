@@ -82,7 +82,7 @@ class EditMedicationState extends State<EditMedication> {
       data = medication!.copy();
 
       timesString = "Times: ${data.times.map((time) {
-        return "${time.hour}:${time.minute < 10 ? '0' + time.minute.toString() : time.minute.toString()}${time.minute == 0 ? '0' : ''}";
+        return "${time.hour}:${time.minute < 10 ? '0' + time.minute.toString() : time.minute.toString()}";
       }).join(', ')}";
 
       DateTime? start = data.startDate;
@@ -119,7 +119,7 @@ class EditMedicationState extends State<EditMedication> {
               // text input for name
               controller: nameController,
               decoration: const InputDecoration(labelText: "Name"),
-              onSubmitted: (value) {
+              onChanged: (value) {
                 data.name = value;
                 setState(() {});
               },
@@ -130,8 +130,12 @@ class EditMedicationState extends State<EditMedication> {
                 decoration:
                     const InputDecoration(labelText: "Total Number of Pills"),
                 keyboardType: TextInputType.number,
-                onSubmitted: (value) {
-                  data.nPills = num.tryParse(value)!.toInt();
+                onChanged: (value) {
+                  if (value == "") {
+                    data.nPills = 0;
+                  } else {
+                    data.nPills = num.tryParse(value)!.toInt();
+                  }
                   setState(() {});
                 }),
             TextField(
@@ -140,7 +144,11 @@ class EditMedicationState extends State<EditMedication> {
                 decoration: const InputDecoration(labelText: "Dosage Amount"),
                 keyboardType: TextInputType.number,
                 onSubmitted: (value) {
-                  data.dosage = num.tryParse(value)!.toInt();
+                  if (value == "") {
+                    data.dosage = 0;
+                  } else {
+                    data.dosage = num.tryParse(value)!.toInt();
+                  }
                   setState(() {});
                 }),
             ListTile(
@@ -170,10 +178,7 @@ class EditMedicationState extends State<EditMedication> {
                   setState(() {
                     List<DateTime> times = data.times;
                     if (times.isNotEmpty) {
-                      timesString = "Times: ${times.map((time) {
-                        String pad = time.minute == 0 ? '0' : '';
-                        return "${time.hour}:${time.minute}$pad";
-                      }).join(', ')}";
+                      timesString = "Times: ${times.join(', ')}";
                     }
                   });
                 });
@@ -332,7 +337,7 @@ class EditMedicationState extends State<EditMedication> {
                 if (data.id != -1) {
                   if (data.isValid) {
                     data.times
-                        .add(DateTime.now().add(const Duration(minutes: 1)));
+                        .add(DateTime.now().add(const Duration(seconds: 30)));
                     if (isNew) {
                       // Add medication to list.
                       medications.add(data);
