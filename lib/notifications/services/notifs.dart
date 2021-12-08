@@ -246,7 +246,10 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
         // TODO: 'smarter' management of sequence numbers
         int nDoses = p.seqNum - m.seqNum;
         if (nDoses < 0) {
-          m.seqNum = 0;
+          m.seqNum = p.seqNum;
+          // assume case occurs when bottle resets and is used,
+          // must recover to p.seqNum
+          nDoses = p.seqNum;
           // bottle was probably reset, send a notif
           // with an alert to check contents of bottle
           AwesomeNotifications().createNotification(
@@ -274,8 +277,9 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
                     channelKey: 'low_channel',
                     title: 'Low on Medication',
                     body: "${m.name} only has ${m.nPills} pills left!"));
-            FlutterBackgroundService().sendData({'updated_med_state': m});
           }
+          FlutterBackgroundService().sendData({'updated_med_state': m});
+
           // log this event nDoses times
           for (int i = 0; i < nDoses; i++) {
             logs[m.id]!.add(p.timestamp);

@@ -78,12 +78,21 @@ class PillPalState extends State<PillPal> {
     FlutterBackgroundService().onDataReceived.listen((snapshot) {
       if (snapshot!.containsKey('updated_med_state')) {
         Medication m = Medication.fromJson(snapshot['updated_med_state']);
+        bool changed = false;
         for (int i = 0; i < medications.length; i++) {
           if (medications[i].id == m.id) {
             medications[i].seqNum = m.seqNum;
             medications[i].nPills = m.nPills;
+            changed = true;
             break;
           }
+        }
+
+        if (changed) {
+          // write changes to disk
+          write(MEDICATIONS_DB, {
+            'medications': medications.map((m) => m.toJson()).toList(),
+          });
         }
       }
     });
