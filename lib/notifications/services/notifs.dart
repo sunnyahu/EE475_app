@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:ffi';
+import 'dart:typed_data';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
@@ -36,6 +38,7 @@ void initNotifications() {
         NotificationChannel(
             channelKey: 'leave_channel',
             channelName: 'Left behind channel',
+            channelGroupKey: 'left_behind',
             channelDescription: 'channel for left behind notifications'),
         NotificationChannel(
             channelKey: 'action_channel',
@@ -48,6 +51,10 @@ void initNotifications() {
           channelGroupName: 'Reminders',
           channelGroupkey: 'reminders',
         ),
+        NotificationChannelGroup(
+          channelGroupkey: 'Left Behind',
+          channelGroupName: 'left_behind',
+        )
       ],
       debug: true);
 
@@ -138,7 +145,9 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
         meds[m.id]!.nPills = m.nPills;
         meds[m.id]!.contacts = m.contacts;
         meds[m.id]!.times = m.times;
+        print(m.times);
         medNextExpect[m.id] = findNextExpectedTime(m.times, null);
+        print(medNextExpect[m.id]);
       } else {
         meds[m.id] = m;
       }
@@ -156,8 +165,10 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
   Timer.periodic(d, (timer) async {
     DateTime now = DateTime.now();
     for (int id in meds.keys) {
-      // print(id.toString());
-      // print(medNextExpect[id]!);
+      print(id);
+      print(now);
+      print(medNextExpect[id]);
+      print(now.difference(medNextExpect[id]!));
       // send a notification if the user is late on dosage
       if (now.difference(medNextExpect[id]!) > const Duration(seconds: 20)) {
         String dispMinute = medNextExpect[id]!.minute < 10
@@ -165,7 +176,7 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
             : medNextExpect[id]!.minute.toString();
         AwesomeNotifications().createNotification(
             content: NotificationContent(
-                id: id >> 32,
+                id: id.toSigned(32),
                 channelKey: 'reminder_channel',
                 title: 'PillPal Reminder',
                 body:
@@ -174,7 +185,7 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
         for (Contact c in meds[id]!.contacts) {
           AwesomeNotifications().createNotification(
               content: NotificationContent(
-                  id: (id >> 32) + 1,
+                  id: (id - 2).toSigned(32),
                   channelKey: 'reminder_channel',
                   title: 'PillPal Reminder',
                   body:
@@ -194,7 +205,7 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
                 'Reminder to take ${meds[id]!.name} at ${t.hour}:$displayMinute';
             AwesomeNotifications().createNotification(
                 content: NotificationContent(
-                    id: id >> 32,
+                    id: id.toSigned(32),
                     channelKey: 'reminder_channel',
                     title: 'PillPal Reminder',
                     body: body));
@@ -213,12 +224,11 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
               const Duration(seconds: 40)) {
         AwesomeNotifications().createNotification(
             content: NotificationContent(
-                id: (key >> 32) - 1,
+                id: key.toSigned(32),
                 channelKey: 'leave_channel',
                 title: 'PillPal Lost Contact with Bottle',
                 body:
-                    'PillPal cannot detect ${meds[key]!.name}, check if it is around!',
-                notificationLayout: NotificationLayout.BigText));
+                    'PillPal cannot detect ${meds[key]!.name}, is it nearby?'));
       }
     }
   });
@@ -241,7 +251,7 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
           // with an alert to check contents of bottle
           AwesomeNotifications().createNotification(
               content: NotificationContent(
-                  id: (p.id >> 32) + 2,
+                  id: (p.id + 2).toSigned(32),
                   channelKey: 'low_channel',
                   title: 'Low on Medication',
                   body:
@@ -260,7 +270,7 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
             // less than 10 pills left
             AwesomeNotifications().createNotification(
                 content: NotificationContent(
-                    id: (p.id >> 32) + 2,
+                    id: (p.id + 2).toSigned(32),
                     channelKey: 'low_channel',
                     title: 'Low on Medication',
                     body: "${m.name} only has ${m.nPills} pills left!"));
@@ -290,7 +300,8 @@ DateTime findNextExpectedTime(List<DateTime> times, DateTime? currTime) {
   bool changed = false;
   for (int i = 0; i < adjustedTime.length; i++) {
     DateTime t = adjustedTime[i];
-    if ((currTime != null && currTime != t) && t.isAfter(now)) {
+    if (t.isAfter(now.subtract(const Duration(seconds: 4)))) {
+      if (currTime != null && t == currTime) continue;
       ret = adjustedTime[i];
       changed = true;
       break;

@@ -178,7 +178,8 @@ class EditMedicationState extends State<EditMedication> {
                   setState(() {
                     List<DateTime> times = data.times;
                     if (times.isNotEmpty) {
-                      timesString = "Times: ${times.join(', ')}";
+                      timesString =
+                          "Times: ${times.map((t) => "${t.hour}:${t.minute < 10 ? "0" + t.minute.toString() : t.minute.toString()}").join(', ')}";
                     }
                   });
                 });
