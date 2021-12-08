@@ -30,9 +30,12 @@ class MedicationHistory extends StatelessWidget {
                 itemCount: data.length,
                 itemBuilder: (BuildContext context, int index) {
                   var history = data[index];
+                  String displayMinute = history.minute < 10
+                      ? "0" + history.minute.toString()
+                      : history.minute.toString();
                   return ListTile(
                     title: Text(
-                      '${history.day}/${history.month}/${history.year} - ${history.hour}:${history.minute}',
+                      '${history.day}/${history.month}/${history.year} - ${history.hour}:$displayMinute',
                     ),
                   );
                 }),

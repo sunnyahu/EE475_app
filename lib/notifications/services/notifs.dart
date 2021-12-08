@@ -14,7 +14,6 @@ void initNotifications() {
       AwesomeNotifications().requestPermissionToSendNotifications();
     }
   });
-
   AwesomeNotifications().initialize(
       // set the icon to null if you want to use the default app icon
       null,
@@ -104,7 +103,7 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
   });
 
   // periodically commit logs to storage
-  Timer.periodic(const Duration(seconds: 20), (timer) async {
+  Timer.periodic(const Duration(seconds: 5), (timer) async {
     for (var id in logs.keys) {
       await write(id.toString(),
           {'data': logs[id]!.map((d) => d.toIso8601String()).toList()});
@@ -150,51 +149,55 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
   // Reminder Service
   // ==============================
   const Duration d = Duration(seconds: 15);
+  const Duration d1 = Duration(minutes: 1);
 
   // Time-based medication reminder
-  // TODO: send notificaiton if someone forgets to take med
-  const Duration d1 = Duration(hours: 1);
+  // const Duration d1 = Duration(hours: );
   Timer.periodic(d, (timer) async {
     DateTime now = DateTime.now();
-    DateTime compareTime = DateTime(1, 1, 1, now.hour, now.minute, now.second);
     for (int id in meds.keys) {
+      print(id.toString());
+      print(medNextExpect[id]!);
       // send a notification if the user is late on dosage
-      if (now.difference(medNextExpect[id]!) > const Duration(minutes: 5)) {
+      if (now.difference(medNextExpect[id]!) > const Duration(seconds: 10)) {
+        String dispMinute = medNextExpect[id]!.minute < 10
+            ? "0" + medNextExpect[id]!.minute.toString()
+            : medNextExpect[id]!.minute.toString();
         AwesomeNotifications().createNotification(
             content: NotificationContent(
-                id: 42069,
+                id: id >> 32,
                 channelKey: 'reminder_channel',
                 title: 'PillPal Reminder',
-                body: "Don't forget to take ${meds[id]!.name}!!"));
+                body:
+                    "Did you forget to take ${meds[id]!.name} at ${medNextExpect[id]!.hour}:$dispMinute?",
+                notificationLayout: NotificationLayout.BigText));
         for (Contact c in meds[id]!.contacts) {
           AwesomeNotifications().createNotification(
               content: NotificationContent(
-                  id: int.parse(c.id),
+                  id: (id >> 32) + 1,
                   channelKey: 'reminder_channel',
                   title: 'PillPal Reminder',
-                  body: "Sending a text to ${c.phoneNumber}"));
+                  body:
+                      "Sending a text to ${c.name} to remind you to take ${meds[id]!.name}",
+                  notificationLayout: NotificationLayout.BigText));
         }
       }
       // send a notification for an upcoming dosage
       for (DateTime t in meds[id]!.times) {
-        if (t.difference(compareTime).abs() < d1) {
+        if (t.difference(
+                DateTime(t.year, t.month, t.day, now.hour, now.minute)) <
+            d1) {
           if (meds[id]!.push) {
+            String displayMinute =
+                t.minute < 10 ? "0" + t.minute.toString() : t.minute.toString();
             String body =
-                'Reminder to take ${meds[id]!.name} at ${t.hour}:${t.minute}';
+                'Reminder to take ${meds[id]!.name} at ${t.hour}:$displayMinute';
             AwesomeNotifications().createNotification(
                 content: NotificationContent(
-                    id: 69,
+                    id: id >> 32,
                     channelKey: 'reminder_channel',
                     title: 'PillPal Reminder',
                     body: body));
-            for (Contact c in meds[id]!.contacts) {
-              AwesomeNotifications().createNotification(
-                  content: NotificationContent(
-                      id: int.parse(c.id),
-                      channelKey: 'reminder_channel',
-                      title: 'PillPal Reminder',
-                      body: "Sending a text to ${c.phoneNumber}"));
-            }
           }
         }
       }
@@ -207,14 +210,15 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
       if (meds[key]!.leftBehind &&
           medLastSeen[key] != null &&
           DateTime.now().difference(medLastSeen[key]!) >
-              const Duration(minutes: 5)) {
+              const Duration(seconds: 40)) {
         AwesomeNotifications().createNotification(
             content: NotificationContent(
-                id: 12345,
+                id: (key >> 32) - 1,
                 channelKey: 'leave_channel',
                 title: 'PillPal Lost Contact with Bottle',
                 body:
-                    'PillPal cannot detect ${meds[key]!.name}, check if it is around!'));
+                    'PillPal cannot detect ${meds[key]!.name}, check if it is around!',
+                notificationLayout: NotificationLayout.BigText));
       }
     }
   });
@@ -237,7 +241,7 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
           // with an alert to check contents of bottle
           AwesomeNotifications().createNotification(
               content: NotificationContent(
-                  id: 1337,
+                  id: (p.id >> 32) + 2,
                   channelKey: 'low_channel',
                   title: 'Low on Medication',
                   body:
@@ -255,7 +259,7 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
             // less than 10 pills left
             AwesomeNotifications().createNotification(
                 content: NotificationContent(
-                    id: 420,
+                    id: (p.id >> 32) + 2,
                     channelKey: 'low_channel',
                     title: 'Low on Medication',
                     body: "${m.name} only has ${m.nPills} pills left!"));
@@ -275,18 +279,19 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
 
 // Helper function to identify the next expected time
 DateTime findNextExpectedTime(List<DateTime> times) {
-  times.sort();
   DateTime now = DateTime.now();
   List<DateTime> adjustedTime = [];
   for (DateTime t in times) {
     adjustedTime.add(DateTime(now.year, now.month, now.day, t.hour, t.minute));
   }
-  DateTime ret;
+  adjustedTime.sort();
+  DateTime ret = now;
   bool changed = false;
   for (int i = 0; i < adjustedTime.length; i++) {
     DateTime t = adjustedTime[i];
-    if (t.isAfter(now)) {
+    if (t.isAfter(now.subtract(const Duration(minutes: 3)))) {
       ret = adjustedTime[i];
+      changed = true;
       break;
     }
   }
@@ -294,7 +299,6 @@ DateTime findNextExpectedTime(List<DateTime> times) {
   if (!changed) {
     ret = adjustedTime[0].add(const Duration(days: 1));
   }
-
   return ret;
 }
 

@@ -146,19 +146,18 @@ class Medication {
   }
 
   void copyFrom(Medication other) {
-    Medication medication = other.copy();
-    id = medication.id;
-    seqNum = medication.seqNum;
-    name = medication.name;
-    xDays = medication.xDays;
-    startDate = medication.startDate;
-    endDate = medication.endDate;
-    times = medication.times;
-    dosage = medication.dosage;
-    nPills = medication.nPills;
-    leftBehind = medication.leftBehind;
-    push = medication.push;
-    contacts = medication.contacts;
+    id = other.id;
+    seqNum = other.seqNum;
+    name = other.name;
+    xDays = other.xDays;
+    startDate = other.startDate;
+    endDate = other.endDate;
+    times = other.times;
+    dosage = other.dosage;
+    nPills = other.nPills;
+    leftBehind = other.leftBehind;
+    push = other.push;
+    contacts = other.contacts;
   }
 
   factory Medication.fromJson(Map<String, dynamic> json) =>

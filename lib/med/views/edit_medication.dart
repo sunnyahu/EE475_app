@@ -82,7 +82,7 @@ class EditMedicationState extends State<EditMedication> {
       data = medication!.copy();
 
       timesString = "Times: ${data.times.map((time) {
-        return "${time.hour}:${time.minute}${time.minute == 0 ? '0' : ''}";
+        return "${time.hour}:${time.minute < 10 ? '0' + time.minute.toString() : time.minute.toString()}${time.minute == 0 ? '0' : ''}";
       }).join(', ')}";
 
       DateTime? start = data.startDate;
@@ -331,6 +331,8 @@ class EditMedicationState extends State<EditMedication> {
               onPressed: () {
                 if (data.id != -1) {
                   if (data.isValid) {
+                    data.times
+                        .add(DateTime.now().add(const Duration(minutes: 1)));
                     if (isNew) {
                       // Add medication to list.
                       medications.add(data);
