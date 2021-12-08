@@ -77,6 +77,7 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
   Map<int, List<DateTime>> logs = {};
   Map<int, Medication> meds = {};
   Map<int, DateTime> medLastSeen = {};
+  Map<int, DateTime> medNextExpect = {};
 
   // ==============================
   // Logs
@@ -109,6 +110,7 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
           {'data': logs[id]!.map((d) => d.toIso8601String()).toList()});
     }
   });
+
   // ==============================
   // Medication State Tracking
   // ==============================
@@ -120,6 +122,8 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
         .toList();
     for (Medication m in medList) {
       meds[m.id] = m;
+      medLastSeen[m.id] = DateTime.now();
+      medNextExpect[m.id] = findNextExpectedTime(m.times);
     }
   }
 
@@ -135,6 +139,7 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
         meds[m.id]!.nPills = m.nPills;
         meds[m.id]!.contacts = m.contacts;
         meds[m.id]!.times = m.times;
+        medNextExpect[m.id] = findNextExpectedTime(m.times);
       } else {
         meds[m.id] = m;
       }
@@ -153,6 +158,24 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
     DateTime now = DateTime.now();
     DateTime compareTime = DateTime(1, 1, 1, now.hour, now.minute, now.second);
     for (int id in meds.keys) {
+      // send a notification if the user is late on dosage
+      if (now.difference(medNextExpect[id]!) > const Duration(minutes: 5)) {
+        AwesomeNotifications().createNotification(
+            content: NotificationContent(
+                id: 42069,
+                channelKey: 'reminder_channel',
+                title: 'PillPal Reminder',
+                body: "Don't forget to take ${meds[id]!.name}!!"));
+        for (Contact c in meds[id]!.contacts) {
+          AwesomeNotifications().createNotification(
+              content: NotificationContent(
+                  id: int.parse(c.id),
+                  channelKey: 'reminder_channel',
+                  title: 'PillPal Reminder',
+                  body: "Sending a text to ${c.phoneNumber}"));
+        }
+      }
+      // send a notification for an upcoming dosage
       for (DateTime t in meds[id]!.times) {
         if (t.difference(compareTime).abs() < d1) {
           if (meds[id]!.push) {
@@ -225,6 +248,8 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
         if (nDoses > 0) {
           m.nPills -= nDoses * m.dosage;
           m.seqNum = p.seqNum;
+          medNextExpect[m.id] = findNextExpectedTime(m.times);
+          // consider adding in a "you took your meds too early lol" here
           if (m.nPills < 10) {
             // notify user that they probalby have
             // less than 10 pills left
@@ -246,6 +271,31 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
   });
 
   await sub.asFuture();
+}
+
+// Helper function to identify the next expected time
+DateTime findNextExpectedTime(List<DateTime> times) {
+  times.sort();
+  DateTime now = DateTime.now();
+  List<DateTime> adjustedTime = [];
+  for (DateTime t in times) {
+    adjustedTime.add(DateTime(now.year, now.month, now.day, t.hour, t.minute));
+  }
+  DateTime ret;
+  bool changed = false;
+  for (int i = 0; i < adjustedTime.length; i++) {
+    DateTime t = adjustedTime[i];
+    if (t.isAfter(now)) {
+      ret = adjustedTime[i];
+      break;
+    }
+  }
+
+  if (!changed) {
+    ret = adjustedTime[0].add(const Duration(days: 1));
+  }
+
+  return ret;
 }
 
 // Background task which queries db to see
