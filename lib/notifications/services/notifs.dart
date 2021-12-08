@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:pill_pal/blue/data/packets.dart';
+import 'package:pill_pal/contact/data/contact.dart';
 import 'package:pill_pal/db/database.dart';
 import 'package:pill_pal/med/data/medication.dart';
 
@@ -132,6 +133,8 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
         meds[m.id]!.leftBehind = m.leftBehind;
         meds[m.id]!.dosage = m.dosage;
         meds[m.id]!.nPills = m.nPills;
+        meds[m.id]!.contacts = m.contacts;
+        meds[m.id]!.times = m.times;
       } else {
         meds[m.id] = m;
       }
@@ -144,20 +147,32 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
   const Duration d = Duration(seconds: 15);
 
   // Time-based medication reminder
+  // TODO: send notificaiton if someone forgets to take med
+  const Duration d1 = Duration(hours: 1);
   Timer.periodic(d, (timer) async {
     DateTime now = DateTime.now();
     DateTime compareTime = DateTime(1, 1, 1, now.hour, now.minute, now.second);
     for (int id in meds.keys) {
       for (DateTime t in meds[id]!.times) {
-        if (meds[id]!.push && t.difference(compareTime).abs() < d) {
-          String body =
-              'Reminder to take ${meds[id]!.name} at ${t.hour}:${t.minute}';
-          AwesomeNotifications().createNotification(
-              content: NotificationContent(
-                  id: 69,
-                  channelKey: 'reminder_channel',
-                  title: 'PillPal Reminder',
-                  body: body));
+        if (t.difference(compareTime).abs() < d1) {
+          if (meds[id]!.push) {
+            String body =
+                'Reminder to take ${meds[id]!.name} at ${t.hour}:${t.minute}';
+            AwesomeNotifications().createNotification(
+                content: NotificationContent(
+                    id: 69,
+                    channelKey: 'reminder_channel',
+                    title: 'PillPal Reminder',
+                    body: body));
+            for (Contact c in meds[id]!.contacts) {
+              AwesomeNotifications().createNotification(
+                  content: NotificationContent(
+                      id: int.parse(c.id),
+                      channelKey: 'reminder_channel',
+                      title: 'PillPal Reminder',
+                      body: "Sending a text to ${c.phoneNumber}"));
+            }
+          }
         }
       }
     }
@@ -166,7 +181,8 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
   // You-left-your-bottle-behind reminder
   Timer.periodic(d, (timer) async {
     for (int key in meds.keys) {
-      if (medLastSeen[key] != null &&
+      if (meds[key]!.leftBehind &&
+          medLastSeen[key] != null &&
           DateTime.now().difference(medLastSeen[key]!) >
               const Duration(minutes: 5)) {
         AwesomeNotifications().createNotification(

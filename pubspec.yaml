@@ -44,6 +44,7 @@ dependencies:
   flutter_reactive_ble: ^5.0.2
   syncfusion_flutter_gauges: ^19.3.56
   awesome_notifications: any
+  permission_handler: ^8.3.0
 
 dev_dependencies:
   flutter_test:

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:pill_pal/blue/services/scanner_task.dart';
 import 'package:pill_pal/notifications/services/notifs.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../med/data/medication.dart';
 import '../../med/views/list_medications.dart';
@@ -16,6 +17,7 @@ import '../../db/database.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await [Permission.location, Permission.sms].request();
   initNotifications();
   FlutterBackgroundService.initialize(startScanner);
 

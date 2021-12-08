@@ -32,7 +32,7 @@ class MedicationHistory extends StatelessWidget {
                   var history = data[index];
                   return ListTile(
                     title: Text(
-                      '${history.day}/${history.month}/${history.year}',
+                      '${history.day}/${history.month}/${history.year} - ${history.hour}:${history.minute}',
                     ),
                   );
                 }),

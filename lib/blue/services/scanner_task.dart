@@ -10,7 +10,6 @@ import 'package:pill_pal/notifications/services/notifs.dart';
 void startScanner() {
   WidgetsFlutterBinding.ensureInitialized();
   final service = FlutterBackgroundService();
-
   service.onDataReceived.listen((event) {
     if (event!["action"] == "stopService") {
       service.stopBackgroundService();
