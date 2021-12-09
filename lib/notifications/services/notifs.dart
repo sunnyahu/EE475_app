@@ -194,22 +194,20 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
         }
       }
       // send a notification for an upcoming dosage
-      for (DateTime t in meds[id]!.times) {
-        if (t.difference(
-                DateTime(t.year, t.month, t.day, now.hour, now.minute)) >
-            d1) {
-          if (meds[id]!.push) {
-            String displayMinute =
-                t.minute < 10 ? "0" + t.minute.toString() : t.minute.toString();
-            String body =
-                'Reminder to take ${meds[id]!.name} at ${t.hour}:$displayMinute';
-            AwesomeNotifications().createNotification(
-                content: NotificationContent(
-                    id: id.toSigned(32),
-                    channelKey: 'reminder_channel',
-                    title: 'PillPal Reminder',
-                    body: body));
-          }
+      if (medNextExpect[id]!.isAfter(now) &&
+          now.difference(medNextExpect[id]!).abs() < d1) {
+        if (meds[id]!.push) {
+          String displayMinute = medNextExpect[id]!.minute < 10
+              ? "0" + medNextExpect[id]!.minute.toString()
+              : medNextExpect[id]!.minute.toString();
+          String body =
+              'Reminder to take ${meds[id]!.name} at ${medNextExpect[id]!.hour}:$displayMinute';
+          AwesomeNotifications().createNotification(
+              content: NotificationContent(
+                  id: id.toSigned(32),
+                  channelKey: 'reminder_channel',
+                  title: 'PillPal Reminder',
+                  body: body));
         }
       }
     }
@@ -218,6 +216,7 @@ void packetHandlerTask(Stream<Set<PillPacket>> stream) async {
   // You-left-your-bottle-behind reminder
   Timer.periodic(d, (timer) async {
     for (int key in meds.keys) {
+      print(meds[key]!.name);
       if (meds[key]!.leftBehind &&
           medLastSeen[key] != null &&
           DateTime.now().difference(medLastSeen[key]!) >

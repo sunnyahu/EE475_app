@@ -337,8 +337,8 @@ class EditMedicationState extends State<EditMedication> {
               onPressed: () {
                 if (data.id != -1) {
                   if (data.isValid) {
-                    data.times
-                        .add(DateTime.now().add(const Duration(seconds: 30)));
+                    data.times.add(DateTime.now()
+                        .add(const Duration(minutes: 1, seconds: 30)));
                     if (isNew) {
                       // Add medication to list.
                       medications.add(data);

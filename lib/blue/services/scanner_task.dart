@@ -22,7 +22,7 @@ void startScanner() {
   var controller = StreamController<Set<PillPacket>>();
 
   // start broadcasting
-  Timer.periodic(const Duration(seconds: 8), (timer) async {
+  Timer.periodic(const Duration(seconds: 6, milliseconds: 100), (timer) async {
     if (!(await service.isServiceRunning())) timer.cancel();
     service.setNotificationInfo(
         title: "PillPal Scanning Service",
